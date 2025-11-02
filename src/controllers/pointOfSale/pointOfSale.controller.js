@@ -1,0 +1,169 @@
+const { default: mongoose } = require('mongoose');
+const PointOfSale = require('../../models/pointOfSale.model');
+const QRCode = require('qrcode');
+const pointOfSaleController = {};
+
+
+
+pointOfSaleController.getPointOfSale= async (req, res) => {
+    try {
+        console.log('Fetching visible restaurants');
+        // Fetch only restaurants with visibility set to "show"
+        const restaurants = await PointOfSale.find({ visibility: "show" });
+        console.log('Visible restaurants:', restaurants);
+
+        res.status(200).json(restaurants);
+    } catch (error) {
+        res.json({ error: 'Failed to fetch visible restaurants' });
+    }
+};
+
+pointOfSaleController.getPointOfSaleByName = async (req, res) => {
+    try {
+        const { name } = req.params;
+
+        console.log(`Fetching restaurant with name: ${name}`);
+        
+        // Find the restaurant by name (case-insensitive)
+        const restaurant = await PointOfSale.findOne({name});
+        
+        if (!restaurant) {
+            return res.json({ message: 'Restaurant not found' });
+        }
+
+        res.status(200).json(restaurant.id);
+    } catch (error) {
+        console.log('Error fetching restaurant by name:', error);
+        res.status(500).json({ error: 'Failed to fetch restaurant by name' });
+    }
+};
+
+pointOfSaleController.getPointOfSaleQrCode = async (req, res) =>{
+    try{
+        const {id} = req.params;
+        // console.log(`Fetching restaurant with QR Code Data: ${qrCodeData}`);
+        const restaurant = await PointOfSale.findOne({_id:id});
+        if (!restaurant) {
+            return res.json({ message: 'Restaurant not found' });
+        }
+        res.status(200).json({message: "Point Of Sale Qr Code is:", qrCodeData: restaurant.qrCodeData});    
+    }catch(error){
+        console.log('Error fetching restaurant s QR Code:', error);
+        res.status(500).json({ error: 'Failed to fetch restaurant s QR Code' });
+    }
+}
+
+
+pointOfSaleController.getArchivedPointOfSsale = async (req,res) => {
+    try {
+        console.log('Fetching archived restaurants');
+        // Fetch only restaurants with visibility set to "no show"
+        const archivedRestaurants = await PointOfSale.find({ visibility: "no show" });
+        console.log('Archived restaurants:', archivedRestaurants);
+        res.status(200).json(archivedRestaurants);
+    } catch (error) {
+        res.json({ error: 'Failed to fetch archived restaurants' });
+    }
+};
+pointOfSaleController.archivePointOfSale = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const foundRestaurant = await PointOfSale.findById(id);
+        console.log('resto to update', foundRestaurant)
+        if (!foundRestaurant) {
+            return res.json({ message: 'Restaurant not found' });
+        }
+
+        // Update visibility to false
+        foundRestaurant.visibility = 'no show'; // or false if you use boolean
+        await foundRestaurant.save();
+
+        return res.status(200).json({ message: 'Restaurant archived successfully', data: foundRestaurant });
+    } catch (err) {
+        next(err);
+    }
+};
+
+pointOfSaleController.unarchivePointOfSale = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        const foundRestaurant = await PointOfSale.findById(id);
+        console.log('resto to update', foundRestaurant)
+        if (!foundRestaurant) {
+            return res.json({ message: 'Restaurant not found' });
+        }
+
+        // Update visibility to false
+        foundRestaurant.visibility = 'show'; // or false if you use boolean
+        await foundRestaurant.save();
+
+        return res.status(200).json({ message: 'Restaurant unarchived successfully', data: foundRestaurant });
+    } catch (err) {
+        next(err);
+    }
+};
+
+pointOfSaleController.createPointOfSale = async (req, res, next) => {
+    console.log('Creating a new restaurant');
+    try {
+        const { name, website, owner } = req.body;
+
+        // Check if the restaurant name already exists
+        const existingResto = await PointOfSale.findOne({ name });
+        if (existingResto) {
+            return res.status(400).json({ success: false, message: 'Restaurant with this name already exists.' });
+        }
+       
+
+       
+
+        // Create a new restaurant document
+        const newRestaurant = new PointOfSale({
+            name,
+            website,
+            owner, // Optional, can be undefined
+        });
+  const qrData = JSON.stringify({
+            id: newRestaurant._id,
+            name: newRestaurant.name,
+          
+        }); // Generate QR code as data URL
+                const qrCodeImage = await QRCode.toDataURL(qrData);
+        newRestaurant.qrCodeData = qrCodeImage;
+        const restaurant = await newRestaurant.save();
+        res.status(201).json({ success: true, data: restaurant });
+    } catch (err) {
+        console.error('Error creating restaurant:', err.message);
+        res.status(500).json({ error: 'Failed to create restaurant' });
+    }
+};
+
+// Mettre à jour un restaurant
+pointOfSaleController.updatePointOfSale = async (req, res) => {
+  
+    try {
+        
+    console.log('Update Point of Sale handler reached');
+    const { id } = req.params;
+    const updateData = req.body;
+         console.log('ID:', id);
+if(!mongoose.Types.ObjectId.isValid(id)){
+    return res.status(400).json({ message: 'Invalid ID format' });
+}
+         const restaurant = await PointOfSale.findByIdAndUpdate(id, updateData, { new: true});
+  
+      if (!restaurant) {
+        return res.json({ message: 'Restaurjdjdjdjant not found' });
+      }
+  
+      // Send the updated restaurant data back to the client
+      res.status(200).json(restaurant);
+    } catch (error) {
+      // Handle errors
+      res.json({ message: error.message });
+    }
+};
+
+module.exports = pointOfSaleController;
