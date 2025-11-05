@@ -30,6 +30,8 @@ authController.login = async(req, res, next) =>{
     }
 
     const pointOfSaleName = user?.pointOfSale ? user?.pointOfSale?.name: null;
+    const businessName = user?.businessName ? user?.businessName: null;
+  
     const role = user.role;
       //we have to generate the token if the password is valid
 
@@ -39,6 +41,7 @@ authController.login = async(req, res, next) =>{
         telephone: user.telephone,
         role,
         pointOfSaleName,
+        businessName,
         id: user._id
         
       },
@@ -46,7 +49,7 @@ authController.login = async(req, res, next) =>{
       {expiresIn: process.env.JWT_EXPIRATION})
     
 
-    res.json({message:'Login Succesful', token, role, pointOfSaleName});
+    res.json({message:'Login Succesful', token, role, pointOfSaleName, businessName, userId: user._id});
     
   }catch(err){
     next(err)

@@ -13,10 +13,10 @@ const UserSchema = mongoose.Schema({
     },
     pointOfSale: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "PointOfSale", // Reference the PointDeVente collection
+        ref: "PointOfSale", // Reference the PointDeVente collection,
         default: null // Use null if no point of sale is assigned
     },
-    
+
     email: {
         type: String,
         lowercase: true,
@@ -25,34 +25,105 @@ const UserSchema = mongoose.Schema({
         match: [/\S+@\S+\.\S+/, 'is invalid'],
         index: true
     },
-    telephone:{
-        type:String, 
+    telephone: {
+        type: String,
         required: false
+    },
+    avatar: {
+        type: String,
+        required: false
+    },
+    // just for the final user role
+    points: {
+        type: Number,
+        required: false
+    },
+    totalVisits: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    totalReviews: {
+        type: Number,
+        required: false,
+        default: 0
+    }, verified: {
+        type: Boolean,
+        required: false,
+        default: true
+    },
+  preferences: {
+  notifications: {
+    type: Boolean,
+    default: true
+  },
+  emailUpdates: {
+    type: Boolean,
+    default: true
+  },
+  favoriteCuisines: {
+    type: [String],
+    default: []
+  }
+},
+
+    visitHistory: [{
+        pointOfSaleId: mongoose.Schema.Types.ObjectId,
+        pointOfSaleName: String,
+        date: Date,
+        pointsEarned: Number
+    }],
+
+    //   for the owner
+    businessName: String,
+    pointsOfSales: [{ type: mongoose.Schema.Types.ObjectId, ref: 'PointOfSale' }],
+    totalRestaurants: { type: Number, default: 0 },
+    subscription: {
+        plan: { type: String, enum: ['basic', 'premium'], default: 'basic' },
+        status: String,
+        expiresAt: Date,
+
+    },
+    totalVisitsAllRestaurants:{
+        type:Number,
+        required:false,
+        default:0
+    },
+    totalReviewsAllRestaurants:{
+        type:Number,
+        required:false,
+        default:0
+    },
+    averageRatingAllRestaurants:{
+        type:Number,
+        required:false,
+        default:0
+    },
+    status:{
+        type:String,
+        enum:['active','inactive'],
+        default:'active'
     },
 
     password: {
         type: String,
         required: true
     },
-    // pointOfSale: [
-    //     {
-    //       type: mongoose.Types.ObjectId,
-    //       ref: "User",
-    //       default:''
-    //     }
-    
-    //   ],
-    
+    lastLogin: {
+        type:Date,
+        default:Date.now,
+        required:false
+    },
     role: {
         type: String,
-        enum: ['SUPER_ADMIN','SOUS_ADMIN','FINAL_USER',"RESTO_SUPER_ADMIN","RESTO_SOUS_ADMIN"],
+        enum: ['SUPER_ADMIN', 'SOUS_ADMIN', 'FINAL_USER', "RESTO_SUPER_ADMIN", "RESTO_SOUS_ADMIN"],
         default: 'FINAL_USER'
     },
 
     resetPasswordToken: {
         type: String
     },
-    
+
 
     resetPasswordExpires: {
         type: Date
@@ -73,25 +144,25 @@ const UserSchema = mongoose.Schema({
 });
 
 // Hash le mot de passe avant de sauvegarder l'utilisateur
-UserSchema.pre('save', async function (next){
-    try{
-         if((this.password).isModified || this.isNew){
-       const ifAlreadyHashed = /^\$2[ayb]\$.{56}$/.test(this.password);
+UserSchema.pre('save', async function (next) {
+    try {
+        if ((this.password).isModified || this.isNew) {
+            const ifAlreadyHashed = /^\$2[ayb]\$.{56}$/.test(this.password);
 
-       if(!ifAlreadyHashed){
-        this.password = await hashPass(this.password)
-       }
-       next();
-       
-    }
-    }catch(err){
+            if (!ifAlreadyHashed) {
+                this.password = await hashPass(this.password)
+            }
+            next();
+
+        }
+    } catch (err) {
         next(err)
     }
-   
+
 })
 
 
-UserSchema.methods.comparePassword = function(candidatePassword) {
+UserSchema.methods.comparePassword = function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
 };
 

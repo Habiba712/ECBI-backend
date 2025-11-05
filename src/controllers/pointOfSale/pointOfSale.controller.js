@@ -38,6 +38,26 @@ pointOfSaleController.getPointOfSaleByName = async (req, res) => {
     }
 };
 
+pointOfSaleController.getPointsOfSaleByOwnerId = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        console.log(`Fetching restaurants with Owner id: ${id}`);
+        
+        // Find the restaurant by name (case-insensitive)
+        const restaurants = await PointOfSale.find({ownerId: id});
+        
+        if (!restaurants) {
+            return res.json({ message: 'Restaurant not found' });
+        }
+
+        res.status(200).json(restaurants);
+    } catch (error) {
+        console.log('Error fetching restaurant by name:', error);
+        res.status(500).json({ error: 'Failed to fetch restaurant by name' });
+    }
+};
+
 pointOfSaleController.getPointOfSaleQrCode = async (req, res) =>{
     try{
         const {id} = req.params;
@@ -108,7 +128,12 @@ pointOfSaleController.unarchivePointOfSale = async (req, res, next) => {
 pointOfSaleController.createPointOfSale = async (req, res, next) => {
     console.log('Creating a new restaurant');
     try {
-        const { name, website, owner } = req.body;
+        const { name,
+            ownerId,
+            website,
+            adress,
+            phone,
+            cuisine} = req.body;
 
         // Check if the restaurant name already exists
         const existingResto = await PointOfSale.findOne({ name });
@@ -121,13 +146,17 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
 
         // Create a new restaurant document
         const newRestaurant = new PointOfSale({
-            name,
+           name,
+            ownerId,
             website,
-            owner, // Optional, can be undefined
+            adress,
+            phone,
+            cuisine // Optional, can be undefined
         });
   const qrData = JSON.stringify({
             id: newRestaurant._id,
             name: newRestaurant.name,
+
           
         }); // Generate QR code as data URL
                 const qrCodeImage = await QRCode.toDataURL(qrData);
@@ -152,7 +181,7 @@ pointOfSaleController.updatePointOfSale = async (req, res) => {
 if(!mongoose.Types.ObjectId.isValid(id)){
     return res.status(400).json({ message: 'Invalid ID format' });
 }
-         const restaurant = await PointOfSale.findByIdAndUpdate(id, updateData, { new: true});
+         const restaurant = await PointOfSale.findByIdAndUpdate(id, updateData);
   
       if (!restaurant) {
         return res.json({ message: 'Restaurjdjdjdjant not found' });
@@ -163,6 +192,19 @@ if(!mongoose.Types.ObjectId.isValid(id)){
     } catch (error) {
       // Handle errors
       res.json({ message: error.message });
+    }
+};
+
+pointOfSaleController.deletePointOfSale = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const restaurant = await PointOfSale.findByIdAndDelete(id);
+        if (!restaurant) {
+            return res.status(404).json({ message: 'Restaurant not found' });
+        }
+        return res.status(200).json({ message: 'Restaurant deleted successfully', data: restaurant });
+    } catch (err) {
+        next(err);
     }
 };
 

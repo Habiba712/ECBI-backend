@@ -5,6 +5,7 @@ const health = require('../controllers/health.controller');
 const authRoutes = require('./user/auth.routes');
 const userRoutes = require('./user/user.routes');
 const pointOfSaleRoutes = require('../routes/pointOfSale.routes');
+const reviewsRoutes = require('../routes/reviews.routes');
 const authMiddleware = require('../middlewares/auth.middleware');
 // const pointOfSaleRouter = require('./pointsdeventes.routes');
 
@@ -12,6 +13,7 @@ const authMiddleware = require('../middlewares/auth.middleware');
 router.get('/health', health.ping);
 router.use('/auth', authRoutes);
 router.use('/user', userRoutes);
+router.use('/reviews', reviewsRoutes);
 
 //protected routes
 router.use('/pointOfSale', pointOfSaleRoutes);
