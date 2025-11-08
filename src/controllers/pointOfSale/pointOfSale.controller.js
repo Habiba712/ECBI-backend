@@ -177,7 +177,7 @@ pointOfSaleController.updatePointOfSale = async (req, res) => {
     console.log('Update Point of Sale handler reached');
     const { id } = req.params;
     const updateData = req.body;
-         console.log('ID:', id);
+         console.log('Update Data', updateData);
 if(!mongoose.Types.ObjectId.isValid(id)){
     return res.status(400).json({ message: 'Invalid ID format' });
 }

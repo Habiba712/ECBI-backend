@@ -32,6 +32,11 @@ const pointOfSaleSchema = new mongoose.Schema({
   phone: String,
   email: String,
   website: String,
+  description: {
+    type: String,
+    maxlength: 1000,
+    required: false
+  },
   
   // === QR CODE & BRANDING ===
   qrCodeData: {
