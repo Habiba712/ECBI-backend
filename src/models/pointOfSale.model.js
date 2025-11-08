@@ -62,7 +62,7 @@ const pointOfSaleSchema = new mongoose.Schema({
   cuisine: {
     type: String,
     enum: [
-      'Italian', 'Japanese', 'American', 'Mexican', 'Thai', 
+      'Italian','Moroccan', 'Japanese', 'American', 'Mexican', 'Thai', 
       'Chinese', 'Indian', 'French', 'Mediterranean', 
       'Korean', 'Vietnamese', 'Greek', 'Spanish', 'Cafe', 'Other'
     ]

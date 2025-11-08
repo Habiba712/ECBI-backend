@@ -57,4 +57,16 @@ reviewsController.updateReviews = async (req, res, next) =>{
         next(err)
     }
 }
+
+reviewsController.getReviewsByPointOfSaleId = async (req, res, next) =>{
+    try{
+        const {id} = req.params;
+        console.log('iddddd', id);
+        const reviews = await Review.find({pointOfSaleId: id}).populate(['pointOfSaleId' , 'userId']);
+
+        res.status(200).json({message:"Reviews Fetched Successfully", reviews});
+    }catch(err){
+        next(err)
+    }
+}
 module.exports = reviewsController;

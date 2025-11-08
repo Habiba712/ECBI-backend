@@ -19,6 +19,12 @@ router.get('/getPointsOfSaleByOwnerId/:id',
     pointOfSaleController.getPointsOfSaleByOwnerId);
 
 
+
+router.get('/getPointsOfSaleById/:id',  
+    
+    pointOfSaleController.getPointOfSaleById);
+
+
 router.get('/getAllPointOfSale', 
     
     pointOfSaleController.getPointOfSale);
@@ -31,8 +37,8 @@ router.put('/updatePointOfSale/:id',
 //we still need the delete route
 
 router.delete('/deletePointOfSale/:id', 
-    authMiddleware,
-     checkRole(["SUPER_ADMIN","RESTO_SUPER_ADMIN"]),
+    // authMiddleware,
+    //  checkRole(["SUPER_ADMIN","RESTO_SUPER_ADMIN"]),
     pointOfSaleController.deletePointOfSale);
 
 router.get('/getPointOfSaleQrCode/:id',

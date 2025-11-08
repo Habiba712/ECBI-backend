@@ -22,4 +22,9 @@ router.put('/updateReviews/:id',
     // checkRole(['SUPER_ADMIN']),
     reviewsController.updateReviews
 )
+router.get('/getReviewsByPointOfSaleId/:id',
+    // authMiddleware,
+    // checkRole(['SUPER_ADMIN']),
+    reviewsController.getReviewsByPointOfSaleId
+)
 module.exports = router;

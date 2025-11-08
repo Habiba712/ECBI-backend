@@ -37,6 +37,25 @@ pointOfSaleController.getPointOfSaleByName = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch restaurant by name' });
     }
 };
+pointOfSaleController.getPointOfSaleById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        console.log(`Fetching restaurant with id: ${id}`);
+        
+        // Find the restaurant by name (case-insensitive)
+        const restaurant = await PointOfSale.findById(id);
+        
+        if (!restaurant) {
+            return res.json({ message: 'Restaurant not found' });
+        }
+
+        res.status(200).json(restaurant);
+    } catch (error) {
+        console.log('Error fetching restaurant by id:', error);
+        res.status(500).json({ error: 'Failed to fetch restaurant by id' });
+    }
+};
 
 pointOfSaleController.getPointsOfSaleByOwnerId = async (req, res) => {
     try {
@@ -131,9 +150,19 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
         const { name,
             ownerId,
             website,
-            adress,
+            address:{
+                city,
+                country,
+                state,
+                street,
+                zipCode
+            },
+            coverImage,
             phone,
-            cuisine} = req.body;
+            description,
+            cuisine,
+            status
+        } = req.body;
 
         // Check if the restaurant name already exists
         const existingResto = await PointOfSale.findOne({ name });
@@ -149,9 +178,21 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
            name,
             ownerId,
             website,
-            adress,
+            address: {
+                city,
+                country,
+                state,
+                street,
+                zipCode
+            }
+            
+            , coverImage,
             phone,
-            cuisine // Optional, can be undefined
+           
+            description,
+            cuisine,
+            status
+            // Optional, can be undefined
         });
   const qrData = JSON.stringify({
             id: newRestaurant._id,
