@@ -6,15 +6,10 @@ const hashPass = async (password) => {
     return bcrypt.hash(password, 10);
 };
 
-const UserSchema = mongoose.Schema({
-    username: {
+const BaseUserSchema = mongoose.Schema({
+ username: {
         type: String,
         lowercase: true
-    },
-    pointOfSale: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "PointOfSale", // Reference the PointDeVente collection,
-        default: null // Use null if no point of sale is assigned
     },
 
     email: {
@@ -33,86 +28,14 @@ const UserSchema = mongoose.Schema({
         type: String,
         required: false
     },
-    // just for the final user role
-    points: {
-        type: Number,
-        required: false
-    },
-    totalVisits: {
-        type: Number,
-        required: false,
-        default: 0
-    },
-    totalReviews: {
-        type: Number,
-        required: false,
-        default: 0
-    }, verified: {
-        type: Boolean,
-        required: false,
-        default: true
-    },
-  preferences: {
-  notifications: {
-    type: Boolean,
-    default: true
-  },
-  emailUpdates: {
-    type: Boolean,
-    default: true
-  },
-  favoriteCuisines: {
-    type: [String],
-    default: []
-  }
-},
-
-    visitHistory: [{
-        pointOfSaleId: mongoose.Schema.Types.ObjectId,
-        pointOfSaleName: String,
-        date: Date,
-        pointsEarned: Number
-    }],
-
-    //   for the owner
-    businessName: String,
-    pointsOfSales: [{ type: mongoose.Schema.Types.ObjectId, ref: 'PointOfSale' }],
-    totalRestaurants: { type: Number, default: 0 },
-    subscription: {
-        plan: { type: String, enum: ['basic', 'premium'], default: 'basic' },
-        status: String,
-        expiresAt: Date,
-
-    },
-    totalVisitsAllRestaurants:{
-        type:Number,
-        required:false,
-        default:0
-    },
-    totalReviewsAllRestaurants:{
-        type:Number,
-        required:false,
-        default:0
-    },
-    averageRatingAllRestaurants:{
-        type:Number,
-        required:false,
-        default:0
-    },
-    status:{
-        type:String,
-        enum:['active','inactive'],
-        default:'active'
-    },
-
     password: {
         type: String,
         required: true
     },
     lastLogin: {
-        type:Date,
-        default:Date.now,
-        required:false
+        type: Date,
+        default: Date.now,
+        required: false
     },
     role: {
         type: String,
@@ -140,17 +63,133 @@ const UserSchema = mongoose.Schema({
     enabled: {
         type: Boolean,
         default: false
-    }
+    },
+    subscription: {
+        plan: { type: String, enum: ['basic', 'premium'], default: 'basic' },
+        status: String,
+        expiresAt: Date,
+
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    },
+})
+
+const FinalUserSchema = mongoose.Schema({
+points: {
+        type: Number,
+        required: false
+    },
+    totalVisits: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    totalReviews: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    verified: {
+        type: Boolean,
+        required: false,
+        default: true
+    },
+    visitHistory: [{
+        pointOfSaleId: mongoose.Schema.Types.ObjectId,
+        pointOfSaleName: String,
+        date: Date,
+        pointsEarned: Number
+    }],
+     preferences: {
+        favoriteCuisines: {
+            type: [String],
+            default: []
+        }
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    },
+})
+
+const OwnerInfoSchema = mongoose.Schema({
+    businessName: String,
+
+    ownedPos: [
+        { type: mongoose.Schema.Types.ObjectId,
+        ref: 'PointOfSale',
+        required: false
+     }],
+
+    totalRestaurants: { type: Number, default: 0 },
+// we dont need tjis one, we can just use the lenth of ownedPos
+    totalVisitsAllRestaurants: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+// this filed would rather be in the pos schema, the owner does have to have totalvivtis
+    totalReviewsAllRestaurants: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    averageRatingAllRestaurants: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+
+    settings: {
+        reviews_notifications: {
+            type: Boolean,
+            default: true
+        },
+        visits_notifications: {
+            type: Boolean,
+            default: true
+        },
+        weekly_report: {
+            type: Boolean,
+            default: true
+        }
+    },
+
+})
+
+const SecuritySchema = new mongoose.Schema({
+  resetToken: String,
+  resetTokenExpiry: Date,
+  emailVerificationToken: String,
+  emailVerified: { type: Boolean, default: false }
+});
+
+const UserSchema = mongoose.Schema({
+   base: BaseUserSchema,
+   finalUser: FinalUserSchema,
+   ownerInfo: OwnerInfoSchema,
+   security: SecuritySchema
+  
 });
 
 // Hash le mot de passe avant de sauvegarder l'utilisateur
 UserSchema.pre('save', async function (next) {
     try {
-        if ((this.password).isModified || this.isNew) {
-            const ifAlreadyHashed = /^\$2[ayb]\$.{56}$/.test(this.password);
+        if ((this.base.password).isModified || this.isNew) {
+            const ifAlreadyHashed = /^\$2[ayb]\$.{56}$/.test(this.base.password);
 
             if (!ifAlreadyHashed) {
-                this.password = await hashPass(this.password)
+                this.base.password = await hashPass(this.base.password)
             }
             next();
 

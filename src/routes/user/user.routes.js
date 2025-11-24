@@ -10,6 +10,7 @@ router.post('/createOwner',
     // checkRole(['SUPER_ADMIN']),
     userController.createOwner
 );
+
 router.put('/updateOwner/:id',
     // authMiddleware,
     // checkRole(['SUPER_ADMIN']),
@@ -22,6 +23,20 @@ router.post('/register',
 // router.get('/:id/activate', userController.activateUser);
 // router.get('/users', userController.getUsers);
 
+router.put('/settingsUpdateById/:id',
+  // authMiddleware, 
+  // checkRole(['SUPER_ADMIN']), 
+  userController.settingsUpdateById);
 router.put('/updateUser/:id',authMiddleware, checkRole(['SUPER_ADMIN']), userController.updateUser);
+
+router.get('/getUserById/:id',
+  // authMiddleware, 
+  // checkRole(['SUPER_ADMIN']),
+   userController.getUserById);
+
+router.delete('/deleteUser/:id',
+  // authMiddleware, 
+  // checkRole(['SUPER_ADMIN']),
+   userController.deleteUser);
 module.exports = router;
 

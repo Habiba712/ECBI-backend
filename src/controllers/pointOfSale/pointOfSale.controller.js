@@ -53,6 +53,10 @@ pointOfSaleController.getPointOfSaleById = async (req, res) => {
         res.status(200).json(restaurant);
     } catch (error) {
         console.log('Error fetching restaurant by id:', error);
+
+
+        
+
         res.status(500).json({ error: 'Failed to fetch restaurant by id' });
     }
 };
