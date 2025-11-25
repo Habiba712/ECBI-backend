@@ -29,6 +29,11 @@ const pointOfSaleSchema = new mongoose.Schema({
       longitude: Number
     }
   },
+  posts:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Post',
+    required: false
+  }],
   phone: String,
   email: String,
   website: String,

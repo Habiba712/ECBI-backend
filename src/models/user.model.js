@@ -83,13 +83,28 @@ const BaseUserSchema = mongoose.Schema({
 const FinalUserSchema = mongoose.Schema({
 points: {
         type: Number,
-        required: false
+        required: false,
+        default: 0
     },
+    posts:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post',
+        required: false
+    }],
     totalVisits: {
         type: Number,
         required: false,
         default: 0
     },
+    visits:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'PointOfSale',
+            required: false,
+            default: []
+        }
+    ],
+    // we might not even need the totel visits, we can just use the length of visits
     totalReviews: {
         type: Number,
         required: false,
