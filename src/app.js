@@ -9,9 +9,11 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: ["*"], // your frontend domain
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true,
+
+origin: true,
+
+credentials: true,
+
 }));
 
 app.options('', cors({
