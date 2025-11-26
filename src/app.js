@@ -17,15 +17,15 @@ app.use(express.urlencoded({ extended: true }));
 //         optionsSuccessStatus: 204 // For preflight requests
 //     };
 // app.use(cors(corsOptions));
-   app.use(cors({
-            origin: 'https://ecbi-frontend-9ww4.vercel.app', // Replace with your actual frontend domain
-            methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-            credentials: true, // If you're using cookies or authorization headers
-            optionsSuccessStatus: 204 // Recommended for preflight requests
-        }));
+app.use(cors({
+  origin: 'https://ecbi-frontend-9ww4.vercel.app', // Replace with your actual frontend domain
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // If you're using cookies or authorization headers
+  optionsSuccessStatus: 204 // Recommended for preflight requests
+}));
 
-        // Or, to allow all origins (for development, use with caution in production)
-        // app.use(cors());
+// Or, to allow all origins (for development, use with caution in production)
+app.use(cors());
 app.use(helmet());
 app.use(morgan('dev'));
 
