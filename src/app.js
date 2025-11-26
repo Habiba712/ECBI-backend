@@ -13,7 +13,7 @@ app.use(cors({
 }));
 
 app.options('', cors({
-  origin: ["https://ecbi-frontend-9ww4.vercel.app"],
+  origin: ["*"],
   credentials: true
 }));
 
