@@ -7,7 +7,7 @@ const apiRouter = require('./routes/index.routes');
 
 const app = express();
 app.use(cors({
-  origin: ["https://ecbi-frontend-9ww4.vercel.app"], // your frontend domain
+  origin: ["*"], // your frontend domain
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
 }));
