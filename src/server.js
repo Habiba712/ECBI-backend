@@ -6,11 +6,16 @@ const { connectDB } = require('./config/db');
 const { port } = require('./config');
 
 async function start() {
-  await connectDB();
-  const server = http.createServer(app);
-  server.listen(port, () => {
-    console.log(`Server listening on http://localhost:${port}`);
-  });
+   try {
+        await connectDB();
+        const server = http.createServer(app);
+        server.listen(port, () => {
+            console.log(`Server listening on http://localhost:${port}`);
+        });
+    } catch (err) {
+        console.error("Startup failed:", err);
+        process.exit(1); // ensures Railway sees a crash
+    }
 }
 
 start();
