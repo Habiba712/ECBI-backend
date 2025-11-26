@@ -6,24 +6,20 @@ const apiRouter = require('./routes/index.routes');
 const cors = require('cors');
 
 const app = express();
+app.use(cors({
+  origin: "https://ecbi-frontend-9ww4.vercel.app",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}));
+
+// app.options("*", cors());
+
 app.use(express.urlencoded({ extended: true }));
 
 
 
-const whitelist = process.env.CORS_ALLOW || "*";
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1 || whitelist.indexOf("*") !== -1) {
-            callback(null, true);
-        } else {
-            const err = new Error('Access Denied');
-            err.status = 403;
-            callback(err);
-        }
-    }
-}
 
-app.use(cors(corsOptions));
 
 // app.use(cors());
 app.use(helmet());
