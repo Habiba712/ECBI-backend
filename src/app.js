@@ -1,9 +1,9 @@
 const express = require('express');
 const morgan = require('morgan');
-const cors = require('cors');
 const helmet = require('helmet');
 
 const apiRouter = require('./routes/index.routes');
+const cors = require('cors');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
