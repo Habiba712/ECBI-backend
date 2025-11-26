@@ -8,8 +8,7 @@ const authCtrl = require('../../controllers/user/auth.controller');
 router.post('/login', (req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "https://ecbi-frontend-9ww4.vercel.app");
   res.setHeader("Access-Control-Allow-Credentials", "true");
-  authCtrl.login, 
-  next();
+  return authCtrl.login(req, res, next);
 }
 );
 router.post('/forgot-password', authCtrl.forgotPassword);
