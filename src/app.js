@@ -16,11 +16,12 @@ credentials: true,
 
 }));
 
-app.options('', cors({
-    origin: "https://ecbi-frontend-9ww4.vercel.app",
-  credentials: true
-}));
-
+    const corsOptions = {
+        origin: ['http://localhost:3000', 'https://ecbi-frontend-9ww4.vercel.app'], // Replace with your actual frontend origins
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        credentials: true, // Allow cookies and authentication headers
+        optionsSuccessStatus: 204 // For preflight requests
+    };
 app.use(helmet());
 app.use(morgan('dev'));
 
