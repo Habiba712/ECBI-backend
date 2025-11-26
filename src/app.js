@@ -23,6 +23,7 @@ app.use(cors({
 app.use(express.urlencoded({ extended: true }));
 
 
+app.get('/ping', (req, res) => res.json({ ok: true }));
 
 
 
