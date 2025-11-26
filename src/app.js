@@ -9,7 +9,12 @@ const app = express();
 app.use(cors({
   origin: "https://ecbi-frontend-9ww4.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization",
+    "Access-Control-Allow-Origin",
+    "Access-Control-Allow-Credentials",
+    "Access-Control-Allow-Headers"
+    
+  ],
   credentials: true
 }));
 
