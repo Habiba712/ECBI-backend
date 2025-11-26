@@ -6,6 +6,8 @@ const helmet = require('helmet');
 const apiRouter = require('./routes/index.routes');
 
 const app = express();
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cors({
   origin: ["*"], // your frontend domain
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -21,7 +23,6 @@ app.use(helmet());
 app.use(morgan('dev'));
 
 app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
 
 
 
