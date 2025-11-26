@@ -10,21 +10,21 @@ app.use(express.urlencoded({ extended: true }));
 
 
 
+const whitelist = process.env.CORS_ALLOW || "*";
 const corsOptions = {
-    origin: ['https://ecbi-frontend-9ww4.vercel.app'], // Replace with your actual frontend origins
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, // Allow cookies and authentication headers
-    optionsSuccessStatus: 204 // For preflight requests
-};
-app.use(cors(corsOptions));
-// app.use(cors({
-//   origin: 'https://ecbi-frontend-9ww4.vercel.app', // Replace with your actual frontend domain
-//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-//   credentials: true, // If you're using cookies or authorization headers
-//   optionsSuccessStatus: 204 // Recommended for preflight requests
-// }));
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1 || whitelist.indexOf("*") !== -1) {
+            callback(null, true);
+        } else {
+            const err = new Error('Access Denied');
+            err.status = 403;
+            callback(err);
+        }
+    }
+}
 
-// // Or, to allow all origins (for development, use with caution in production)
+app.use(cors(corsOptions));
+
 // app.use(cors());
 app.use(helmet());
 app.use(morgan('dev'));
