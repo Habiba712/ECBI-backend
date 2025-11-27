@@ -7,7 +7,7 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors({
-  origin: "https://ecbi-frontend-9ww4.vercel.app",
+  origin: ["https://ecbi-frontend-9ww4.vercel.app", "http://localhost:3000"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization",
     "Access-Control-Allow-Origin",

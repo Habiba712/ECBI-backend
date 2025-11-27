@@ -18,6 +18,8 @@ router.put('/updateOwner/:id',
 );
 
 router.post('/register', 
+  authMiddleware,
+  checkRole(['SUPER_ADMIN']),
   userController.register);
 // router.put('/:id', userController.updateUser);
 // router.get('/:id/activate', userController.activateUser);
@@ -28,8 +30,8 @@ router.put('/settingsUpdateById/:id',
   // checkRole(['SUPER_ADMIN']), 
   userController.settingsUpdateById);
 router.put('/updateUser/:id',
-  authMiddleware, 
-  checkRole(['SUPER_ADMIN']), 
+  // authMiddleware, 
+  // checkRole(['SUPER_ADMIN']), 
   userController.updateUser);
 
 router.get('/getUserById/:id',

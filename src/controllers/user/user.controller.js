@@ -111,8 +111,8 @@ userController.register= async(req, res, next)=>{
     //     return res.status(400).json({message: "PointOf Sale Doesn Not Exsist"})
     // }
 let prefsToSave = {
-      notifications: true,
-      emailUpdates: true,
+    //   notifications: true,
+    //   emailUpdates: true,
       favoriteCuisines: []
     };
 
@@ -126,16 +126,14 @@ let prefsToSave = {
         telephone,
         avatar,
         role,
-        points,
+        password: await bcrypt.hash(password, 10)
+       },
+       finalUser:{
+  points,
         preferences:prefsToSave,
-
-        visitHistory:{
+          visitHistory:{
             ...visitHistory
         },
-
-   
-        
-        password: await bcrypt.hash(password, 10)
        }
     })
    
@@ -149,15 +147,22 @@ let prefsToSave = {
 userController.updateUser= async (req,res, next)=> {
     try{
         const {id} = req.params;
-        const updateData = req.body;
-        if (updateData.password){ 
+        const {section, updateData} = req.body;
+
+        console.log('updateData',section, updateData)
+        const updateObject ={
+            [`${section}`]:updateData
+        }
+        console.log('updateObject',updateObject)
+        if (section === "base" && updateData.password){ 
             updateData.password = await bcrypt.hash(updateData.password, 10)
         }
-        const user = await User.findByIdAndUpdate({_id: id}, updateData);
-        console.log('ueer', user)
+        const user = await User.findByIdAndUpdate({_id: id}, updateObject, {new: true});
+        
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+      
 
         return res.status(200).json({ message: 'User updated successfully', data: user });  
 
