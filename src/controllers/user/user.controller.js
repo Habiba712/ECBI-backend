@@ -153,8 +153,8 @@ userController.updateUser= async (req,res, next)=> {
         if (updateData.password){ 
             updateData.password = await bcrypt.hash(updateData.password, 10)
         }
-        const user = await User.findByIdAndUpdate(id, updateData);
-
+        const user = await User.findByIdAndUpdate({_id: id}, updateData);
+        console.log('ueer', user)
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }

@@ -27,7 +27,10 @@ router.put('/settingsUpdateById/:id',
   // authMiddleware, 
   // checkRole(['SUPER_ADMIN']), 
   userController.settingsUpdateById);
-router.put('/updateUser/:id',authMiddleware, checkRole(['SUPER_ADMIN']), userController.updateUser);
+router.put('/updateUser/:id',
+  authMiddleware, 
+  checkRole(['SUPER_ADMIN']), 
+  userController.updateUser);
 
 router.get('/getUserById/:id',
   // authMiddleware, 
