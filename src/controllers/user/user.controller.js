@@ -150,6 +150,9 @@ userController.updateUser= async (req,res, next)=> {
     try{
         const {id} = req.params;
         const updateData = req.body;
+        if (updateData.password){ 
+            updateData.password = await bcrypt.hash(updateData.password, 10)
+        }
         const user = await User.findByIdAndUpdate(id, updateData);
 
         if (!user) {
