@@ -41,7 +41,7 @@ router.delete('/deletePointOfSale/:id',
     //  checkRole(["SUPER_ADMIN","RESTO_SUPER_ADMIN"]),
     pointOfSaleController.deletePointOfSale);
 
-router.get('/getPointOfSaleQrCode/:codeData',
+router.get('/getPointOfSaleQrCode/:id',
     // authMiddleware,
     pointOfSaleController.getPointOfSaleQrCode
 );
