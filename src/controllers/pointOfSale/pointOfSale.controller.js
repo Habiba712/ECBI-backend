@@ -200,12 +200,11 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
             status
             // Optional, can be undefined
         });
-  const qrData = JSON.stringify({
-            id: newRestaurant._id,
-            name: newRestaurant.name,
+        const id= newRestaurant._id;
+  const qrData = `https://${process.env.FRONTEND_URL}/pages/posts/createPost/?id=${id}`
 
           
-        }); // Generate QR code as data URL
+      // Generate QR code as data URL
                 const qrCodeImage = await QRCode.toDataURL(qrData);
         newRestaurant.qrCodeData = qrCodeImage;
         const restaurant = await newRestaurant.save();
