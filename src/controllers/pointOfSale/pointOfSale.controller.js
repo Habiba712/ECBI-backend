@@ -89,9 +89,9 @@ pointOfSaleController.getPointOfSaleQrCode = async (req, res) =>{
         // console.log(`Fetching restaurant with QR Code Data: ${qrCodeData}`);
         const restaurant = await PointOfSale.findById({_id: id});
         if (!restaurant) {
-            return res.json({ message: 'Restaurant not found' });
+              return res.json({ success: false, message: 'Restaurant not found' });
         }
-        res.status(200).json({message: "Point Of Sale Qr Code is found"});
+        res.status(200).json({ success: true, message: 'Restaurant not found', qrCodeData: restaurant.qrCodeData });
     }catch(error){
         console.log('Error fetching restaurant s QR Code:', error);
         res.status(500).json({ error: 'Failed to fetch restaurant s QR Code' });
