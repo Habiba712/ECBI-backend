@@ -83,11 +83,11 @@ pointOfSaleController.getPointsOfSaleByOwnerId = async (req, res) => {
 
 pointOfSaleController.getPointOfSaleQrCode = async (req, res) =>{
     try{
-        const { codeData } = req.params;
-        console.log("PARAM codeData =", codeData);
+        const { id } = req.params;
+        console.log("PARAM codeData =", id);
 
         // console.log(`Fetching restaurant with QR Code Data: ${qrCodeData}`);
-        const restaurant = await PointOfSale.findById({_id:codeData.id});
+        const restaurant = await PointOfSale.findById({_id:id});
         if (!restaurant) {
             return res.json({ message: 'Restaurant not found' });
         }
