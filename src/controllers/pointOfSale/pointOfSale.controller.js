@@ -171,7 +171,7 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
             cuisine,
             status
         } = req.body;
-        const user = await User.findById(req.ownerId);
+        const user = await User.findById(ownerId);
    
         // Check if the restaurant name already exists
         const existingResto = await PointOfSale.findOne({ name });
@@ -207,7 +207,7 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
             return res.status(400).json({message: "User does not exist"})
         }
         console.log('user', user)
-        const updateOwnerInfo = await User.findByIdAndUpdate({_id: req.ownerId}, {
+        const updateOwnerInfo = await User.findByIdAndUpdate({_id: ownerId}, {
             $push: {
                 "ownerInfo.ownedPos": new mongoose.Types.ObjectId(newRestaurant._id)
             }
