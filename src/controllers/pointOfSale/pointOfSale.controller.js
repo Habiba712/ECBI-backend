@@ -207,7 +207,7 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
             return res.status(400).json({message: "User does not exist"})
         }
         console.log('user', user)
-        const updateOwnerInfo = await User.findByIdAndUpdate(req.ownerId, {
+        const updateOwnerInfo = await User.findByIdAndUpdate({_id: req.ownerId}, {
             $push: {
                 "ownerInfo.ownedPos": new mongoose.Types.ObjectId(newRestaurant._id)
             }
