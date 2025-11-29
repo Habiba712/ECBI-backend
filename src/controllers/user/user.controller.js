@@ -22,22 +22,21 @@ userController.createOwner= async(req, res, next)=>{
     console.log(email, userName, pointOfSaleName, password, telephone)
 
     const existingUser = await User.findOne({"ownerInfo.email": email });
-console.log('existingUser',existingUser)
-    if(existingUser){
+     if(existingUser){
         return res.status(400).json({message: "User Already Exists in the database"});
 
     }
 
     const checkPointOfSale = await PointOfSale.findOne({name: pointOfSaleName});
     // console.log('point of sale',checkPointOfSale)
-
+console.log('checkPointOfSale', checkPointOfSale.name)
     if(!checkPointOfSale){
         return res.status(400).json({message: "Point Of Sale Doesn Not Exsist"})
     }
 
     //check if the point of sale is already owned by ANOTHER user
-    if (checkPointOfSale.ownerId.length !== null) {
-        console.log("Point Of Sale Already Owned")
+    if (checkPointOfSale.ownerId !== null) {
+        console.log("Point Of Sal Already Owned")
         return res.status(400).json({ message: "Point Of Sale Already Owned" });
     }
 
