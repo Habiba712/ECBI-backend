@@ -2,6 +2,7 @@ const { default: mongoose } = require('mongoose');
 const PointOfSale = require('../../models/pointOfSale.model');
 const QRCode = require('qrcode');
 const pointOfSaleController = {};
+const User = require('../../models/user.model');
 
 
 
@@ -170,7 +171,8 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
             cuisine,
             status
         } = req.body;
-
+        const user = await User.findById(req.ownerId);
+   
         // Check if the restaurant name already exists
         const existingResto = await PointOfSale.findOne({ name });
         if (existingResto) {
@@ -201,6 +203,16 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
             status
             // Optional, can be undefined
         });
+     if(!user){
+            return res.status(400).json({message: "User does not exist"})
+        }
+        console.log('user', user)
+        const updateOwnerInfo = await User.findByIdAndUpdate(req.ownerId, {
+            $push: {
+                "ownerInfo.ownedPos": new mongoose.Types.ObjectId(newRestaurant._id)
+            }
+        });
+        console.log('updateOwnerInfo', updateOwnerInfo)
         const id= newRestaurant._id;
   const qrData = `https://${process.env.FRONTEND_URL}/pages/posts/createPost?id=${id}`
 
