@@ -214,7 +214,7 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
         });
         console.log('updateOwnerInfo', updateOwnerInfo)
         const id= newRestaurant._id;
-  const qrData = `https://${process.env.FRONTEND_URL}/pages/posts/createPost?id=${id}`
+  const qrData = `https://${process.env.FRONTEND_URL}/pages/posts/createPost/${id}`
 
           
       // Generate QR code as data URL
