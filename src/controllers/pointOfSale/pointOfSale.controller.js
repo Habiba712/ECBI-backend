@@ -69,7 +69,7 @@ pointOfSaleController.getPointsOfSaleByOwnerId = async (req, res) => {
         console.log(`Fetching restaurants with Owner id: ${id}`);
         
         // Find the restaurant by name (case-insensitive)
-        const restaurants = await PointOfSale.findOne({ownerId: id});
+        const restaurants = await PointOfSale.find({ownerId: id});
         
         if (!restaurants) {
             return res.json({ message: 'Restaurant not found' });
