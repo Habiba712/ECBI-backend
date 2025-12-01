@@ -57,7 +57,7 @@ postController.createPost = async (req, res) => {
    if (!req.file) {
       return res.status(400).json({ message: "No image uploaded" });
     }
-
+console.log('req.file', req.file);
     // Upload file to Cloudinary
     const uploadResult = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(

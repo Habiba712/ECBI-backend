@@ -28,7 +28,7 @@ const PostSchema = new mongoose.Schema(
     referralLink: {
       type: String,
       unique: true,
-      required: true,
+      required: false,
     },
 comments: [{
         type: mongoose.Schema.Types.ObjectId,

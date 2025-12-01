@@ -233,7 +233,7 @@ userController.settingsUpdateById= async (req, res, next)=>{
 userController.getUserById  = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const user = await User.findById(id);
+        const user = await User.findById({_id:id});
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
