@@ -33,7 +33,7 @@ postController.scanQr = async (req, res, next) => {
     // Return POS info so frontend / Postman knows where to upload
    return res.status(200).json({
       message: 'POS found. You can upload a post now.',
-      posId: pos._id,
+      pos: pos._id,
       posName: pos.name
     });
 
@@ -47,10 +47,10 @@ postController.scanQr = async (req, res, next) => {
 postController.createPost = async (req, res) => {
   try {
     console.log('create post', req.body);
-   const { caption, ownerId, posId } = req.body;
+   const { caption, owner, pos } = req.body;
 
-    if (!ownerId || !posId) {
-      return res.status(400).json({ message: "Missing ownerId or posId" });
+    if (!owner || !pos) {
+      return res.status(400).json({ message: "Missing owner or pos" });
     }
 
     
@@ -76,8 +76,8 @@ console.log('req.file', req.file);
 
     // Create post
     const newPost = new Post({
-      owner: ownerId,
-      pos: posId,
+      owner: owner,
+      pos: pos,
       photoUrl: uploadResult.secure_url,
       caption,
       referralLink,
@@ -86,19 +86,19 @@ console.log('req.file', req.file);
      await newPost.save();
 
     // Add post to User
-const updatedUser = await User.findById(ownerId);
+const updatedUser = await User.findById(owner);
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
     else{
-     const updatedUser = await User.updateOne({_id: ownerId}, {
+     const updatedUser = await User.updateOne({_id: owner}, {
       $push: { "finalUser.posts": newPost._id },
        });
       console.log('updatedUser', updatedUser);
     }
 
     // Add post to POS
-    await PointOfSale.findByIdAndUpdate(posId, {
+    await PointOfSale.findByIdAndUpdate(pos, {
       $push: { posts: newPost._id },
        });
 
