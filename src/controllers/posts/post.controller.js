@@ -112,4 +112,40 @@ const updatedUser = await User.findById(owner);
   }
 };
 
+postController.getPostById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    return res.status(200).json(post);
+  } catch (error) {
+    next(error);
+  }
+};
+ 
+postController.getPostByOwnerId = async (req, res, next) => {
+  try {
+    const { ownerId } = req.params;
+    const posts = await Post.find({ owner: ownerId });
+    if (!posts) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    return res.status(200).json(posts);
+  } catch (error) {
+    next(error);
+  }
+};
+ postController.getAllPosts= async (req, res, next) => {
+  try {
+    const posts = await Post.find().populate(['owner', 'pos']);
+    if (!posts) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    return res.status(200).json(posts);
+  } catch (error) {
+    next(error);
+  }
+};
 module.exports = postController;

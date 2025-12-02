@@ -18,8 +18,8 @@ router.put('/updateOwner/:id',
 );
 
 router.post('/register', 
-  authMiddleware,
-  checkRole(['SUPER_ADMIN']),
+  // authMiddleware,
+  // checkRole(['SUPER_ADMIN']),
   userController.register);
 // router.put('/:id', userController.updateUser);
 // router.get('/:id/activate', userController.activateUser);

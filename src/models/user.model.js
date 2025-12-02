@@ -7,6 +7,10 @@ const hashPass = async (password) => {
 };
 
 const BaseUserSchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: false,
+    },
  username: {
         type: String,
         lowercase: true

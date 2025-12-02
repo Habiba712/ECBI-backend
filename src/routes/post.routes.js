@@ -16,6 +16,9 @@ router.post('/createPost',upload.single('image'), postController.createPost
     //  authMiddleware, 
     //  checkRole(['SUPER_ADMIN']),
 );
+ router.get('/getAllPosts', postController.getAllPosts);
+ router.get('/getPostById/:id', postController.getPostById);
+ router.get('/getPostByOwnerId/:id', postController.getPostByOwnerId);
 
 // router.get('/getPointOfSale/:name',  
     

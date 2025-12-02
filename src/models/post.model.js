@@ -10,7 +10,7 @@ const PostSchema = new mongoose.Schema(
 
     pos: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Pos",
+      ref: "PointOfSale",
       required: true,
     },
 

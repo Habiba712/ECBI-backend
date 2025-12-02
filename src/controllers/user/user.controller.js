@@ -84,6 +84,7 @@ userController.register= async(req, res, next)=>{
     console.log('are we here')
   try{
     const {
+        name,
         email, 
         username,  
         password, 
@@ -120,6 +121,7 @@ let prefsToSave = {
     }
     const newUSer = new User({
        base: {
+         name,
          email, 
         username,
         telephone,
