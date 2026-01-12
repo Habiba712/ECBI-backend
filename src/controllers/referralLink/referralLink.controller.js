@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const ReferralLink = require('../../models/refferal.model');
-
+const { v4: uuidv4 } = require('uuid');
 
 function generateReferralCode() {
   return Math.random().toString(36).substring(2, 10); // 8 chars
@@ -43,9 +43,25 @@ referralLinkController.getReferralLinkByLink= async (req, res, next)=>{
       {linkId},
       {$inc : {clicks: 1}}
     );
-    
+     if (req.user) {
+      // If logged-in user already tracked?
+      const existing = referralLink.referredUsers.find(u => u.user?.toString() === req.user._id.toString());
+      if (!existing) {
+        referral.referredUsers.push({ user: req.user._id, clickedAt: new Date() });
+      }
+    }else {
+      // Anonymous visitor
+      let tempId = req.cookies?.tempId || uuidv4();
+      res.cookie('tempId', tempId, { maxAge: 30 * 24 * 60 * 60 * 1000 }); // 30 days
 
-    return res.status(200).json(incrementClicks);
+      const existingAnon = referral.referredUsers.find(u => u.tempId === tempId);
+      if (!existingAnon) {
+        referralLink.referredUsers.push({ tempId, clickedAt: new Date() });
+      }
+    }
+    
+await referralLink.save();
+    return res.status(200).json(referralLink);
     }catch(err){
         next(err)
     }

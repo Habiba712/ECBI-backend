@@ -6,6 +6,7 @@ const ReferredUserSub = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User', 
     required: true },
+     tempId: { type: String, default: null }, // for anonymous clicks
 
   joinedAt: { 
     type: Date, 
