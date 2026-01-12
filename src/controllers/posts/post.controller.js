@@ -11,9 +11,9 @@ const postController={};
 
 
 console.log('post controller');
-function generateReferralCode() {
-  return Math.random().toString(36).substring(2, 10); // 8 chars
-}
+// function generateReferralCode() {
+//   return Math.random().toString(36).substring(2, 10); // 8 chars
+// }
 
 postController.scanQr = async (req, res, next) => {
 
@@ -71,8 +71,8 @@ console.log('req.file', req.file);
     });
 
     // Generate unique referral link for this post
-    const referralCode = generateReferralCode();
-    const referralLink = `${process.env.FRONTEND_URL}/ref/${referralCode}`;
+    // const referralCode = generateReferralCode();
+    // const referralLink = `${process.env.FRONTEND_URL}/ref/${referralCode}`;
 
     // Create post
     const newPost = new Post({
@@ -80,7 +80,7 @@ console.log('req.file', req.file);
       pos: pos,
       photoUrl: uploadResult.secure_url,
       caption,
-      referralLink,
+      // referralLink,
     });
 
      await newPost.save();

@@ -24,12 +24,8 @@ const PostSchema = new mongoose.Schema(
       default: "",
     },
 
-    // A UNIQUE referral link per post
-    referralLink: {
-      type: String,
-      unique: true,
-      required: false,
-    },
+    // A UNIQUE referral link per post?? BAD IDEA
+   
 comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment',
@@ -45,13 +41,7 @@ shares:[{
         ref: 'Share',
         required: false
     }],
-    // Users who signed up using THIS post's referral link
-    referredUsers: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
+    
   },
   { timestamps: true }
 );
