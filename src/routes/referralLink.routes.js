@@ -9,6 +9,11 @@ router.post('/createReferralLink',
     // authMiddleware,
     // checkRole(['SUPER_ADMIN']),
     referralLinkController.createReferralLink
-)
+);
+router.get('/getReferralLinkByLink/:linkId',
+    referralLinkController.getReferralLinkByLink
+);
 
 module.exports = router;
+
+// https://ecbi-backend.onrender.com/api/referralLink/getReferralLinkByLink/29qe5voh

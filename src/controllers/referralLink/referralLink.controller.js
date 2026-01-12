@@ -32,12 +32,15 @@ referralLinkController.createReferralLink = async (req, res, next) =>{
 referralLinkController.getReferralLinkByLink= async (req, res, next)=>{
 
     const { linkId } = req.params;
+    console.log('linkId', linkId);
 
     try{
     const referralLink = await ReferralLink.findOne({linkId});
     if (!referralLink) {
         return res.status(404).json({ message: 'Referral Link not found' });
     }
+
+
     return res.status(200).json(referralLink);
     }catch(err){
         next(err)
