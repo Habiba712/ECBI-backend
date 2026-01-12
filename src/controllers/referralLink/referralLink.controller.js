@@ -39,9 +39,13 @@ referralLinkController.getReferralLinkByLink= async (req, res, next)=>{
     if (!referralLink) {
         return res.status(404).json({ message: 'Referral Link not found' });
     }
+    const incrementClicks = await ReferralLink.findOneAndUpdate(
+      {linkId},
+      {$inc : {clicks: 1}}
+    );
+    
 
-
-    return res.status(200).json(referralLink);
+    return res.status(200).json(incrementClicks);
     }catch(err){
         next(err)
     }
