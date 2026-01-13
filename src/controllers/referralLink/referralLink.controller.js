@@ -23,7 +23,7 @@ referralLinkController.createReferralLink = async (req, res, next) =>{
 
    await newReferralLink.save();
 
-   return res.status(201).json({message:"Referral Link for this POS is created successfully", referralLink: referralLink});
+   return res.status(201).json({message:"Referral Link for this POS is created successfully", referralLink: newReferralLink, link: referralLink});
     }catch(err){
         next(err)
     }
