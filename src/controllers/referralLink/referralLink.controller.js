@@ -14,7 +14,7 @@ referralLinkController.createReferralLink = async (req, res, next) =>{
     try{
  // Generate unique referral link for this post
     const referralCode = generateReferralCode();
-    const referralLink = `${process.env.FRONTEND_URL}/pages/ref/${referralCode}`;
+    const referralLink = `${process.env.FRONTEND_URL}/ref/${referralCode}`;
    const newReferralLink = new ReferralLink({
       referrerUser: userId,
       pos: posId,
