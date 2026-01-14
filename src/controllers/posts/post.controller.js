@@ -91,12 +91,9 @@ const updatedUser = await User.findById(owner);
       return res.status(404).json({ message: "User not found" });
     }
     else{
-     const updatedUser = await User.updateOne(
-      {_id: owner},
-      { $push:
-         {"finalUser.posts": newPost._id },
-        
-      });
+     const updatedUser = await User.updateOne({_id: owner}, {
+      $push: { "finalUser.posts": newPost._id },
+       });
       console.log('updatedUser', updatedUser);
     }
 
