@@ -15,7 +15,12 @@ referralLinkController.createReferralLink = async (req, res, next) =>{
  // Generate unique referral link for this post
     const referralCode = generateReferralCode();
     const referralLink = `${process.env.FRONTEND_URL}/ref/${referralCode}`;
-   const newReferralLink = new ReferralLink({
+    const existingRefferalLink = await ReferralLink.findOne({ referrerUser: userId, pos: posId });
+    if (existingRefferalLink) {
+      return res.status(201).json({ message: 'Referral Link for this POS already exists', referralLink: existingRefferalLink, link: referralLink });
+    }
+    else{
+ const newReferralLink = new ReferralLink({
       referrerUser: userId,
       pos: posId,
       linkId: referralCode,
@@ -24,6 +29,8 @@ referralLinkController.createReferralLink = async (req, res, next) =>{
    await newReferralLink.save();
 
    return res.status(201).json({message:"Referral Link for this POS is created successfully", referralLink: newReferralLink, link: referralLink});
+    }
+  
     }catch(err){
         next(err)
     }

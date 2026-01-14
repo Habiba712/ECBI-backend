@@ -10,7 +10,7 @@ pointOfSaleController.getPointOfSale= async (req, res) => {
     try {
         console.log('Fetching visible restaurants');
         // Fetch only restaurants with visibility set to "show"
-        const restaurants = await PointOfSale.find({ visibility: "show" });
+        const restaurants = await PointOfSale.find();
         console.log('Visible restaurants:', restaurants);
 
         res.status(200).json(restaurants);

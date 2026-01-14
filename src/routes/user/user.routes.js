@@ -11,6 +11,12 @@ router.post('/createOwner',
     userController.createOwner
 );
 
+router.get('/getAllUsers',
+    // authMiddleware,
+    // checkRole(['SUPER_ADMIN']),
+    userController.getAllUsers
+);
+
 router.put('/updateOwner/:id',
     // authMiddleware,
     // checkRole(['SUPER_ADMIN']),
