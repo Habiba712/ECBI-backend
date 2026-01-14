@@ -93,6 +93,7 @@ const updatedUser = await User.findById(owner);
     else{
      const updatedUser = await User.updateOne({_id: owner}, {
       $push: { "finalUser.posts": newPost._id },
+      $addToSet: { "finalUser.visits": pos }
        });
       console.log('updatedUser', updatedUser);
     }
