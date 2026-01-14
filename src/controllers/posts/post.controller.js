@@ -94,7 +94,7 @@ const updatedUser = await User.findById(owner);
      const updatedUser = await User.updateOne(
       {_id: owner},
       { $push:
-         {"finalUser.posts": newPost._id, "finalUser.visits": newPost.pos },
+         {"finalUser.posts": newPost._id },
         
       });
       console.log('updatedUser', updatedUser);
