@@ -17,7 +17,7 @@ referralLinkController.createReferralLink = async (req, res, next) =>{
     const referralLink = `${process.env.FRONTEND_URL}/ref/${referralCode}`;
     const existingRefferalLink = await ReferralLink.findOne({ referrerUser: userId, pos: posId });
     if (existingRefferalLink) {
-      return res.status(201).json({ message: 'Referral Link for this POS already exists',  link: `http://localhost:3000/ref/${existingRefferalLink.linkId}`, posId:posId });
+      return res.status(201).json({ message: 'Referral Link for this POS already exists',  link: `${process.env.FRONTEND_URL}/ref/${existingRefferalLink.linkId}` });
     }
     else{
  const newReferralLink = new ReferralLink({
@@ -42,7 +42,7 @@ referralLinkController.getReferralLinkByLink= async (req, res, next)=>{
     console.log('linkId', linkId);
 
     try{
-    const referralLink = await ReferralLink.findOne({linkId});
+    const referralLink = await ReferralLink.findOne({linkId}).populate('pos').populate('referrerUser')
     if (!referralLink) {
         return res.status(404).json({ message: 'Referral Link not found' });
     }
