@@ -50,8 +50,8 @@ referralLinkController.getReferralLinkByLink= async (req, res, next)=>{
       {linkId},
       {$inc : {clicks: 1}}
     );
-     if (req.user) {
-        console.log('User is logged in:', req.user._id);
+     if (req?.body?.user) {
+        console.log('User is logged in:', req?.body?.user);
       // If logged-in user already tracked?
       const existing = referralLink.referredUsers.find(u => u.user?.toString() === req.user._id.toString());
       if (!existing) {
