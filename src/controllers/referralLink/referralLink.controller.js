@@ -37,9 +37,12 @@ referralLinkController.createReferralLink = async (req, res, next) =>{
 }
 
 referralLinkController.getReferralLinkByLink= async (req, res, next)=>{
+console.log('req.params', req.params);
+    const { linkId } = req.params;
+    const user = req.query.user;
 
-    const { linkId, user } = req.params;
     console.log('linkId', linkId);
+    console.log('visitorId', user);
 
     try{
     const referralLink = await ReferralLink.findOne({linkId}).populate('pos').populate('referrerUser')
@@ -53,9 +56,9 @@ referralLinkController.getReferralLinkByLink= async (req, res, next)=>{
      if (user) {
         console.log('User is logged in:', user);
       // If logged-in user already tracked?
-      const existing = referralLink.referredUsers.find(u => u.user?.toString() === req.user._id.toString());
+      const existing = referralLink.referredUsers.find(u => u.user?.toString() === user);
       if (!existing) {
-        referralLink.referredUsers.push({ user: req.user._id, clickedAt: new Date() });
+        referralLink.referredUsers.push({ user: user, clickedAt: new Date() });
       }
     }else {
       // Anonymous visitor
