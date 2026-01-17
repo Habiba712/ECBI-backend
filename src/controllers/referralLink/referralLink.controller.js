@@ -50,13 +50,13 @@ referralLinkController.getReferralLinkByLink= async (req, res, next)=>{
       {linkId},
       {$inc : {clicks: 1}}
     );
-    //  if (req.user) {
-    //   // If logged-in user already tracked?
-    //   const existing = referralLink.referredUsers.find(u => u.user?.toString() === req.user._id.toString());
-    //   if (!existing) {
-    //     referralLink.referredUsers.push({ user: req.user._id, clickedAt: new Date() });
-    //   }
-    // }else {
+     if (req.user) {
+      // If logged-in user already tracked?
+      const existing = referralLink.referredUsers.find(u => u.user?.toString() === req.user._id.toString());
+      if (!existing) {
+        referralLink.referredUsers.push({ user: req.user._id, clickedAt: new Date() });
+      }
+    }else {
       // Anonymous visitor
       let tempId = req.cookies?.tempId || uuidv4();
       res.cookie('tempId', tempId, { maxAge: 30 * 24 * 60 * 60 * 1000 }); // 30 days
@@ -64,7 +64,7 @@ referralLinkController.getReferralLinkByLink= async (req, res, next)=>{
       const existingAnon = referralLink.referredUsers.find(u => u.tempId === tempId);
       if (!existingAnon) {
         referralLink.referredUsers.push({ tempId, clickedAt: new Date() });
-    //   }
+      }
     }
     
 await referralLink.save();
