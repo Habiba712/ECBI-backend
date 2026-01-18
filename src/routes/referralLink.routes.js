@@ -14,6 +14,12 @@ router.get('/getReferralLinkByLink/:linkId',
     referralLinkController.getReferralLinkByLink
 );
 
+router.get('/getAllReferralLinks',
+    // authMiddleware,
+    // checkRole(['SUPER_ADMIN']),
+    referralLinkController.findReferralLinkForModal
+);
+
 module.exports = router;
 
 // https://ecbi-backend.onrender.com/api/referralLink/getReferralLinkByLink/29qe5voh

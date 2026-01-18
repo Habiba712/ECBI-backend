@@ -79,4 +79,27 @@ await referralLink.save();
 
 }
 
+referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
+  const {posId, visitorId} = req.query;
+  try{
+
+    const referralLinks = await ReferralLink.find({
+      pos: posId,
+      referredUsers: {
+        $elemMatch: {
+          user: visitorId
+        }
+      }
+    })
+    if(referralLinks){
+      console.log('referralLinks', referralLinks);
+    }
+
+    return res.status(200).json(referralLinks);
+
+  }catch(err){
+    next(err)
+  }
+}
+
 module.exports = referralLinkController;
