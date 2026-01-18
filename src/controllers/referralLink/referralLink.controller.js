@@ -84,6 +84,8 @@ referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
   console.log('posId', posId);
   console.log('visitorId', visitorId);
   try{
+    //api/referralLink/getAllReferralLinks?posId=692f6edd819f5cdcd659276c&visitorId=692f56c1f275e7d988e7af64
+    //api/referralLink/getAllReferralLinks?posId=692f6edd819f5cdcd659276c&visitorId=692f56c1f275e7d988e7af64
 
     const referralLinks = await ReferralLink.find({
       pos: posId,
@@ -92,7 +94,7 @@ referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
           user: visitorId
         }
       }
-    })
+    }).populate('referrerUser');
     if(referralLinks){
       console.log('referralLinks', referralLinks);
     }
@@ -102,6 +104,10 @@ referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
   }catch(err){
     next(err)
   }
+}
+
+referralLinkController.updateReferraLink = async (req, res, next) =>{
+  
 }
 
 module.exports = referralLinkController;
