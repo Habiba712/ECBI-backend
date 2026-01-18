@@ -41,8 +41,8 @@ console.log('req.params', req.params);
     const { linkId } = req.params;
     const user = req.query.user;
 
-    console.log('linkId', linkId);
-    console.log('visitorId', user);
+    // console.log('linkId', linkId);
+    // console.log('visitorId', user);
 
     try{
     const referralLink = await ReferralLink.findOne({linkId}).populate('pos').populate('referrerUser')
@@ -96,7 +96,7 @@ referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
       }
     }).populate('referrerUser');
     if(referralLinks){
-      console.log('referralLinks', referralLinks);
+      // console.log('referralLinks', referralLinks);
     }
 
     return res.status(200).json(referralLinks);
@@ -107,7 +107,34 @@ referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
 }
 
 referralLinkController.updateReferraLink = async (req, res, next) =>{
-  
+      const { linkId } = req.params;
+
+  const {isExpired, visitorId} = req.body;
+  console.log('dataaa', isExpired, visitorId);  
+
+  try{
+    const referralLink = await ReferralLink.findOne({linkId});
+    if (!referralLink) {
+            return res.status(404).json({ message: "Referral link not found" });
+        }
+    const visitorIndex = referralLink.referredUsers.findIndex(
+            u => u.user?.toString() === visitorId
+        );
+
+    if (visitorIndex === -1) {
+            return res.status(404).json({ message: "Visitor not found in this referral" });
+        }
+    referralLink.referredUsers[visitorIndex].blocked = true;
+
+
+   await referralLink.save();
+
+        console.log('Update successful for visitor:', visitorId);
+    return res.status(200).json(referralLink);
+  }catch(err){
+    next(err)
+  }
+
 }
 
 module.exports = referralLinkController;

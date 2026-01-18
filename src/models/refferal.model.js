@@ -16,6 +16,10 @@ const ReferredUserSub = new mongoose.Schema({
   clickedAt: {
      type: Date,
     default: null },
+    blocked: {
+      type: Boolean,
+      default: false
+    },
               // when they clicked the link
   visited: { 
     type: Boolean, 
