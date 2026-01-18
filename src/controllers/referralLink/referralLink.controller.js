@@ -81,6 +81,8 @@ await referralLink.save();
 
 referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
   const {posId, visitorId} = req.query;
+  console.log('posId', posId);
+  console.log('visitorId', visitorId);
   try{
 
     const referralLinks = await ReferralLink.find({
