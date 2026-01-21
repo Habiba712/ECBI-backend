@@ -36,6 +36,10 @@ const ReferredUserSub = new mongoose.Schema({
   // photosUploadedAt: { 
   //   type: Date, 
   //   default: null },
+  isActive:{
+      type: Boolean,
+      default: false
+  },
 
   rewarded: { 
     type: Boolean, 

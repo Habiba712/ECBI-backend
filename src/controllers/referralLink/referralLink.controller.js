@@ -109,7 +109,7 @@ referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
 referralLinkController.updateReferraLink = async (req, res, next) =>{
       const { linkId } = req.params;
 
-  const {isExpired, visitorId} = req.body;
+  const {isExpired, visitorId, isActive} = req.body;
   console.log('dataaa', isExpired, visitorId);  
 
   try{
@@ -124,7 +124,11 @@ referralLinkController.updateReferraLink = async (req, res, next) =>{
     if (visitorIndex === -1) {
             return res.status(404).json({ message: "Visitor not found in this referral" });
         }
+    if(isExpired === true && isActive === true){
+      referralLink.referredUsers[visitorIndex].isActive = true;
+    }
     referralLink.referredUsers[visitorIndex].blocked = true;
+
 
 
    await referralLink.save();
