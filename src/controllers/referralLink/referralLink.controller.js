@@ -79,6 +79,18 @@ await referralLink.save();
 
 }
 
+referralLinkController.getReferralLinksByUserId = async (req, res, next)=>{
+      const { userId } = req.params;
+
+  console.log('userId', userId);
+  try{
+    const referralLinks = await ReferralLink.find({referrerUser: userId});
+    return res.status(200).json(referralLinks);
+  }catch(err){
+    next(err)
+  }
+}
+
 referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
   const {posId, visitorId} = req.query;
   console.log('posId', posId);
@@ -109,8 +121,9 @@ referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
 referralLinkController.updateReferraLink = async (req, res, next) =>{
       const { linkId } = req.params;
 
-  const {isExpired, visitorId, isActive} = req.body;
-  console.log('dataaa', isExpired, visitorId);  
+  const {isExpired, visitorId, isActive, rewardedLinkOwner} = req.body;
+  console.log('dataaa', isExpired, visitorId);
+  console.log('reward', rewardedLinkOwner);  
 
   try{
     const referralLink = await ReferralLink.findOne({linkId});
@@ -126,6 +139,12 @@ referralLinkController.updateReferraLink = async (req, res, next) =>{
         }
     if(isExpired === true && isActive === true){
       referralLink.referredUsers[visitorIndex].isActive = true;
+    }
+    if(isExpired === true && isActive === true && rewardedLinkOwner){
+      referralLink.pointsEarned += rewardedLinkOwner;
+      referralLink.referredUsers[visitorIndex].visited= true;
+      referralLink.referredUsers[visitorIndex].rewarded = true;
+      referralLink.referredUsers[visitorIndex].pointsAwarded += 20;
     }
     referralLink.referredUsers[visitorIndex].blocked = true;
 
