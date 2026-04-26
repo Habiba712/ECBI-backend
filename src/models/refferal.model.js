@@ -24,18 +24,7 @@ const ReferredUserSub = new mongoose.Schema({
   visited: { 
     type: Boolean, 
     default: false },
-            // did they visit/scan POS?
-  // visitedAt: { 
-  //   type: Date, 
-  //   default: null },
-
-  // photosUploaded: { 
-  //   type: Boolean, 
-  //   default: false },
-  //    // did they upload required photos?
-  // photosUploadedAt: { 
-  //   type: Date, 
-  //   default: null },
+           
   isActive:{
       type: Boolean,
       default: false

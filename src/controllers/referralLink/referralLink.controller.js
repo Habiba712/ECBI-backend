@@ -147,7 +147,7 @@ referralLinkController.updateReferraLink = async (req, res, next) =>{
       referralLink.referredUsers[visitorIndex].pointsAwarded += 20;
     }
     referralLink.referredUsers[visitorIndex].blocked = true;
-
+// I think the notification creation should happen at this point
 
 
    await referralLink.save();
