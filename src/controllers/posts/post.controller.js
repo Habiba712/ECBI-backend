@@ -92,6 +92,7 @@ console.log('req.file', req.file);
       message: 'You gained 50 points via referral link to ' + owner.name,
       read: false
     });
+    await newNotif.save();
 
     // Add post to User
 const updatedUser = await User.findById(owner);
