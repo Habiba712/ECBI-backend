@@ -48,6 +48,7 @@ postController.createPost = async (req, res) => {
   try {
     console.log('create post', req.body);
    const { caption, owner, referralUser, pos } = req.body;
+   console.log('referralUser', referralUser);
  
     if (!owner || !pos) {
       return res.status(400).json({ message: "Missing owner or pos" });
