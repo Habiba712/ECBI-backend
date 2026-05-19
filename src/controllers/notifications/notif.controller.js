@@ -14,7 +14,7 @@ notifController.getByReceipient = async (req, res) => {
     }
 }
 
-notification.createNotification = async (req, res) => {
+notifController.createNotification = async (req, res) => {
 
     // i need the id of the user who will receive the notification
     // plus the id of the one who sent it 
