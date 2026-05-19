@@ -5,7 +5,7 @@ const cloudinary = require('../../config/cloudinary'); // Import Cloudinary conf
  const Post = require('../../models/post.model');
 const User = require('../../models/user.model');
 const PointOfSale = require('../../models/pointOfSale.model');
-
+const Notification = require('../../models/notification.model');
 // const { Readable } = require('stream');
 const postController={};
 
@@ -47,8 +47,8 @@ postController.scanQr = async (req, res, next) => {
 postController.createPost = async (req, res) => {
   try {
     console.log('create post', req.body);
-   const { caption, owner, pos } = req.body;
-
+   const { caption, owner, referralUser, pos } = req.body;
+ 
     if (!owner || !pos) {
       return res.status(400).json({ message: "Missing owner or pos" });
     }
@@ -84,6 +84,14 @@ console.log('req.file', req.file);
     });
 
      await newPost.save();
+
+     // the notification should probably be created here, no? 
+    const newNotif = new Notification({
+      recepient: owner,
+      sender: owner, // not the owner of the post, the owner of the referral link that was sent.
+      message: 'You gained 50 points via referral link to ' + owner.name,
+      read: false
+    });
 
     // Add post to User
 const updatedUser = await User.findById(owner);

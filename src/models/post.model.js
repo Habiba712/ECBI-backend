@@ -7,7 +7,11 @@ const PostSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-
+      referralUser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     pos: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "PointOfSale",
