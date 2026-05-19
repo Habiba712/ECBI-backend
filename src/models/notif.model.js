@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const NotificationSchema = new mongoose.Scheme({
+const NotificationSchema = new mongoose.Schema({
 
     recipient: {
          type: mongoose.Schema.Types.ObjectId,
@@ -27,5 +27,5 @@ const NotificationSchema = new mongoose.Scheme({
     }
 });
 
-const Notification = mongoose.model('Notification', NotificationSchema);
+const Notification = mongoose.model("Notification", NotificationSchema);
 module.exports = Notification;
