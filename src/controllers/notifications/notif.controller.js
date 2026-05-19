@@ -1,5 +1,5 @@
 
-const Notification = require('../../models/notification.model');
+const Notification = require('../../models/notif.model');
 const notifController = {};
 
 notifController.getByReceipient = async (req, res) => {
