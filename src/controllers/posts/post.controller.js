@@ -5,7 +5,7 @@ const cloudinary = require('../../config/cloudinary'); // Import Cloudinary conf
  const Post = require('../../models/post.model');
 const User = require('../../models/user.model');
 const PointOfSale = require('../../models/pointOfSale.model');
-const Notification = require('../../models/notification.model');
+const Notification = require('../../models/notif.model');
 // const { Readable } = require('stream');
 const postController={};
 
