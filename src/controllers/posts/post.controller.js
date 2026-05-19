@@ -88,7 +88,7 @@ console.log('req.file', req.file);
      // the notification should probably be created here, no? 
     const newNotif = new Notification({
       recepient: owner,
-      sender: owner, // not the owner of the post, the owner of the referral link that was sent.
+      sender: referralUser, // not the owner of the post, the owner of the referral link that was sent.
       message: 'You gained 50 points via referral link to ' + owner.name,
       read: false
     });
@@ -120,6 +120,14 @@ const updatedUser = await User.findById(owner);
     return res.json({ message: error.message });
   }
 };
+
+
+
+
+
+
+
+
 
 postController.getPostById = async (req, res, next) => {
   try {
