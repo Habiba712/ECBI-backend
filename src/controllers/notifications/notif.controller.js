@@ -36,3 +36,5 @@ notifController.createNotification = async (req, res) => {
         console.error('Error creating notification: ', err)
     }
 }
+
+module.exports = notifController;
