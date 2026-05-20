@@ -2,17 +2,17 @@
 const Notification = require('../../models/notif.model');
 const notifController = {};
 
-// notifController.getByReceipient = async (req, res) => {
-//     try{
-//         const userId = req.params.userId;
-//         const notifs = await Notification.find({ recepient: userId });
-//         res.status(200).json(notifs);
+notifController.getByReceipient = async (req, res) => {
+    try{
+        const userId = req.params.userId;
+        const notifs = await Notification.find({ recipient: userId });
+        res.status(200).json(notifs);
 
-//     }catch(err){
-//         console.err('Error fetching notifications: ', err);
-//         res.status(400).json({ message: 'Error fetching notifications' });
-//     }
-// }
+    }catch(err){
+        console.err('Error fetching notifications: ', err);
+        res.status(400).json({ message: 'Error fetching notifications' });
+    }
+}
 
 notifController.createNotification = async (req, res) => {
 
