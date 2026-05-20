@@ -91,8 +91,7 @@ console.log('req.file', req.file);
     const newNotif = new Notification({
       recepient: owner,
       sender: referralUser, // not the owner of the post, the owner of the referral link that was sent.
-      message: 'You gained 50 points via referral link to ' + owner.name,
-      read: false
+      message: 'You gained 50 points via referral link to ' + owner.name
     });
     await newNotif.save();
 
