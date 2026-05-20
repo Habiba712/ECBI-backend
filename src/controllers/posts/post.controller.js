@@ -78,6 +78,7 @@ console.log('req.file', req.file);
     // Create post
     const newPost = new Post({
       owner: owner,
+      referralUser: referralUser,
       pos: pos,
       photoUrl: uploadResult.secure_url,
       caption,
