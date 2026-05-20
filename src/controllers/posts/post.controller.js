@@ -159,7 +159,7 @@ postController.getPostByOwnerId = async (req, res, next) => {
 };
  postController.getAllPosts= async (req, res, next) => {
   try {
-    const posts = await Post.find().populate(['owner', 'pos']);
+    const posts = await Post.find().populate(['owner', 'pos']).sort({ createdAt: -1 });
     if (!posts) {
       return res.status(404).json({ message: "Post not found" });
     }
