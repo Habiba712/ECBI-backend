@@ -5,7 +5,7 @@ const notifController = {};
 notifController.getByReceipient = async (req, res) => {
     try{
         const userId = req.params.userId;
-        const notifs = await Notification.find({ recipient: userId });
+        const notifs = await Notification.find({ recipient: userId }).populate('sender');
         res.status(200).json(notifs);
 
     }catch(err){
@@ -22,10 +22,10 @@ notifController.createNotification = async (req, res) => {
     // the noification is gonna be created the moment a post is poster by the user B.
 
     try {
-        const { recepientId, senderId, message } = req;
+        const { recipientId, senderId, message } = req.body;
 
         const notif = new Notification({
-            recepient: recepientId,
+            recipient: recipientId,
             sender: senderId,
             message: message
         });

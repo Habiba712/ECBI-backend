@@ -4,12 +4,12 @@ const NotificationSchema = new mongoose.Schema({
 
     recipient: {
          type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: "User",
         required: true
     },
      sender: {
           type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: "User",
         required: true
     },
     message: {
