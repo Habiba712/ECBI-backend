@@ -37,4 +37,37 @@ notifController.createNotification = async (req, res) => {
     }
 }
 
+notifController.markAsRead = async (req, res) => {
+    try {
+        const {notifId} = req.params;
+        const Notif = await Notification.findByIdAndUpdate(
+            notifId, 
+            { read: true }
+        )
+        if (!Notif){
+            return res.status(404).json({ message: "Notification not found" });
+        }
+        await Notif.save();
+        res.status(200).json(Notif);
+    }
+    catch (err) {
+        console.error('Error marking notification as read: ', err);
+        res.status(400).json({ message: 'Error marking notification as read' });
+    }
+}
+
+notifController.deleteNotification = async (req, res) => {
+    try {
+        const { notifId } = req.params;
+        const notif = await Notification.findByIdAndDelete(notifId);
+        if (!notif) {
+            return res.status(404).json({ message: "Notification not found" });
+        }
+        res.status(200).json({ message: "Notification deleted successfully" });
+    }
+    catch (err) {
+        console.error('Error deleting notification: ', err);
+        res.status(400).json({ message: 'Error deleting notification' });
+    }
+}
 module.exports = notifController;

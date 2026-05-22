@@ -9,6 +9,13 @@ router.post('/createNotification',
     authMiddleware,
     // checkRole(["SUPER_ADMIN","RESTO_SUPER_ADMIN"]),
     notifController.createNotification);
-
+router.put('/markAsRead/:notifId',
+    authMiddleware,
+    // checkRole(["SUPER_ADMIN","RESTO_SUPER_ADMIN"]),
+    notifController.markAsRead);
+router.delete('/deleteNotification/:notifId',
+    authMiddleware,
+    // checkRole(["SUPER_ADMIN","RESTO_SUPER_ADMIN"]),
+    notifController.deleteNotification);
 
 module.exports = router;
