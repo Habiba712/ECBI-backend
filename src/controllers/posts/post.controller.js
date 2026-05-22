@@ -88,6 +88,8 @@ console.log('req.file', req.file);
      await newPost.save();
 
      // the notification should probably be created here, no? 
+     console.log('referralUser', referralUser);
+     console.log('owner', owner);
     const newNotif = new Notification({
       recipient: referralUser,
       sender: owner, // not the owner of the post, the owner of the referral link that was sent.
