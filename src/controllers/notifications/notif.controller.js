@@ -42,7 +42,7 @@ notifController.markAsRead = async (req, res) => {
         const {notifId} = req.params;
         const Notif = await Notification.findByIdAndUpdate(
             notifId, 
-            { read: true }
+            { "read": true }
         )
         if (!Notif){
             return res.status(404).json({ message: "Notification not found" });
