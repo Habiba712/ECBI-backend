@@ -183,7 +183,9 @@ userController.updateUser = async (req, res, next) => {
             updateData.password = await bcrypt.hash(updateData.password, 10)
         }
         const user = await User.findByIdAndUpdate({ _id: id }, {
-            ...updateObject,
+            name: updateData.name,
+            telephone: updateData.telephone,
+            email: updateData.email,
             avatar: uploadResult.secure_url
         },
             { new: true });
