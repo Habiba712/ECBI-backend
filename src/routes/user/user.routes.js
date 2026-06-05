@@ -3,7 +3,8 @@ const router = express.Router();
 const userController = require('../../controllers/user/user.controller');
 const authMiddleware = require('../../middlewares/auth.middleware');
 const checkRole = require('../../middlewares/roles.middleware');
-
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
 
 router.post('/createOwner',
     // authMiddleware,
@@ -35,7 +36,7 @@ router.put('/settingsUpdateById/:id',
   // authMiddleware, 
   // checkRole(['SUPER_ADMIN']), 
   userController.settingsUpdateById);
-router.put('/updateUser/:id',
+router.put('/updateUser/:id',upload.single('avatar'),
   // authMiddleware, 
   // checkRole(['SUPER_ADMIN']), 
   userController.updateUser);
