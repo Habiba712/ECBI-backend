@@ -77,7 +77,7 @@ userController.updateOwner = async (req, res, next) => {
         const { id } = req.params;
         const updateData = req.body;
         const user = await User.findByIdAndUpdate(id, updateData);
-
+ 
         res.status(202).json({ message: 'User updated successfully', data: user });
 
         if (!user) {
@@ -158,7 +158,20 @@ userController.updateUser = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { section, updateData } = req.body;
-
+if (!req.file) {
+      return res.status(400).json({ message: "No image uploaded" });
+    }
+    const uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: "users" },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            }
+          );
+          uploadStream.end(req.file.buffer);
+        });
+        
         console.log('updateData', section, updateData)
         const updateObject = {
             [`${section}`]: updateData
@@ -167,7 +180,9 @@ userController.updateUser = async (req, res, next) => {
         if (section === "base" && updateData.password) {
             updateData.password = await bcrypt.hash(updateData.password, 10)
         }
-        const user = await User.findByIdAndUpdate({ _id: id }, updateObject, { new: true });
+        const user = await User.findByIdAndUpdate({ _id: id }, {updateObject,
+            avatar: uploadResult.secure_url},
+            { new: true });
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
