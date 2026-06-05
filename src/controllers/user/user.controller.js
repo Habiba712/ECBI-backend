@@ -157,38 +157,46 @@ userController.register = async (req, res, next) => {
 userController.updateUser = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { section, updateData } = req.body;
+        const { section, name, email, telephone, password } = req.body;
         console.log('updateData', section, updateData)
-        if (!req.file) {
-            return res.status(400).json({ message: "No image uploaded" });
-        }
-        const uploadResult = await new Promise((resolve, reject) => {
-            const uploadStream = cloudinary.uploader.upload_stream(
-                { folder: "users" },
-                (error, result) => {
-                    if (error) return reject(error);
-                    resolve(result);
-                }
-            );
-            uploadStream.end(updateData.avatar.buffer);
-        });
-        console.log('uploadResult', uploadResult)
+      console.log('📦 Processing section:', section);
+        console.log('✏️ Processing field variables:', { name, email, telephone });
 
-        console.log('updateData', section, updateData)
-        const updateObject = {
-            [`${section}`]: updateData
+        let avatarUrl = null;
+
+        // 2. Safely capture stream buffer updates from your file parser middleware (Multer)
+        if (req.file) {
+            const uploadResult = await new Promise((resolve, reject) => {
+                const uploadStream = cloudinary.uploader.upload_stream(
+                    { folder: "users" },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        resolve(result);
+                    }
+                );
+                uploadStream.end(req.file.buffer);
+            });
+            avatarUrl = uploadResult.secure_url;
         }
-        console.log('updateObject', updateObject)
-        if (section === "base" && updateData.password) {
-            updateData.password = await bcrypt.hash(updateData.password, 10)
+        console.log('uploadResult', uploadResult)
+const fieldsToUpdate = {};
+        const targetSection = section || "base"; // Fallback safety catch
+
+        if (name) fieldsToUpdate[`${targetSection}.name`] = name;
+        if (email) fieldsToUpdate[`${targetSection}.email`] = email;
+        if (telephone) fieldsToUpdate[`${targetSection}.telephone`] = telephone;
+        if (avatarUrl) fieldsToUpdate[`${targetSection}.avatar`] = avatarUrl;
+
+        if (password) {
+            fieldsToUpdate[`${targetSection}.password`] = await bcrypt.hash(password, 10);
         }
-        const user = await User.findByIdAndUpdate({ _id: id }, {
-            name: updateData.name,
-            telephone: updateData.telephone,
-            email: updateData.email,
-            avatar: uploadResult.secure_url
-        },
-            { new: true });
+
+        // 4. Update the record within MongoDB matching your deep object path assignment
+        const user = await User.findByIdAndUpdate(
+            id,
+            { $set: fieldsToUpdate },
+            { new: true, runValidators: true }
+        );
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
