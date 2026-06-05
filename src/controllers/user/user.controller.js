@@ -170,7 +170,7 @@ userController.updateUser = async (req, res, next) => {
                     resolve(result);
                 }
             );
-            uploadStream.end(req.file.buffer);
+            uploadStream.end(updateData.avatar.buffer);
         });
         console.log('uploadResult', uploadResult)
 
@@ -183,7 +183,7 @@ userController.updateUser = async (req, res, next) => {
             updateData.password = await bcrypt.hash(updateData.password, 10)
         }
         const user = await User.findByIdAndUpdate({ _id: id }, {
-            updateObject,
+            ...updateObject,
             avatar: uploadResult.secure_url
         },
             { new: true });
