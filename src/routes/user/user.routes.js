@@ -46,6 +46,10 @@ router.get('/getUserById/:id',
   // checkRole(['SUPER_ADMIN']),
    userController.getUserById);
 
+router.put('/updateProfileUser/:id',upload.single('avatar'),
+  // authMiddleware, 
+  // checkRole(['SUPER_ADMIN']), 
+  userController.updateProfileUser);
 router.delete('/deleteUser/:id',
   // authMiddleware, 
   // checkRole(['SUPER_ADMIN']),

@@ -210,6 +210,60 @@ const fieldsToUpdate = {};
     }
 }
 
+userController.updateProfileUser = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { name, email, telephone, password } = req.body;
+        
+
+        let avatarUrl = null;
+
+        // 2. Safely capture stream buffer updates from your file parser middleware (Multer)
+        if (req.file) {
+            const uploadResult = await new Promise((resolve, reject) => {
+                const uploadStream = cloudinary.uploader.upload_stream(
+                    { folder: "users" },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        resolve(result);
+                    }
+                );
+                uploadStream.end(req.file.buffer);
+            });
+            avatarUrl = uploadResult.secure_url;
+        }
+        console.log('uploadResult', uploadResult)
+const fieldsToUpdate = {};
+        const targetSection = section || "base"; // Fallback safety catch
+
+        if (name) fieldsToUpdate[`${targetSection}.name`] = name;
+        if (email) fieldsToUpdate[`${targetSection}.email`] = email;
+        if (telephone) fieldsToUpdate[`${targetSection}.telephone`] = telephone;
+        if (avatarUrl) fieldsToUpdate[`${targetSection}.avatar`] = avatarUrl;
+
+        // if (password) {
+        //     fieldsToUpdate[`${targetSection}.password`] = await bcrypt.hash(password, 10);
+        // }
+
+        // 4. Update the record within MongoDB matching your deep object path assignment
+        const user = await User.findByIdAndUpdate(
+            id,
+            { $set: fieldsToUpdate },
+            { new: true, runValidators: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+
+        return res.status(200).json({ message: 'User updated successfully', data: user });
+
+    } catch (err) {
+
+    }
+}
+
 userController.settingsUpdateById = async (req, res, next) => {
     const settingsSchema = z.object({
         username: z.string().min(2).max(50, "Name must be at least 2 characters").optional(),
