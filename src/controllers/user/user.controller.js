@@ -160,7 +160,7 @@ userController.updateUser = async (req, res, next) => {
         const { id } = req.params;
         const { section, name, email, telephone, password , newPassword} = req.body;
         const targetSection = section || "base"; // Fallback safety catch
-
+ const fieldsToUpdate = {};
         if (!password || password === "" || password === "undefined") {
             return res.status(400).json({ message: "Confirming your current password is required to save changes." });
         }
@@ -200,16 +200,14 @@ userController.updateUser = async (req, res, next) => {
             console.log('ℹ️ No new avatar file provided.');
         }
 
-        const fieldsToUpdate = {};
+       
 
         if (name) fieldsToUpdate[`${targetSection}.name`] = name;
         if (email) fieldsToUpdate[`${targetSection}.email`] = email;
         if (telephone) fieldsToUpdate[`${targetSection}.telephone`] = telephone;
         if (avatarUrl) fieldsToUpdate[`${targetSection}.avatar`] = avatarUrl;
 
-        if (password) {
-            fieldsToUpdate[`${targetSection}.password`] = await bcrypt.hash(password, 10);
-        }
+       
 
         // 4. Update the record within MongoDB matching your deep object path assignment
         const user = await User.findByIdAndUpdate(
