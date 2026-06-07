@@ -159,8 +159,20 @@ userController.updateUser = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { section, name, email, telephone, password } = req.body;
-       
 
+        if (!password || password === "" || password === "undefined") {
+            return res.status(400).json({ message: "Confirming your current password is required to save changes." });
+        }
+        const existingUser = await User.findById(id);
+        if (!existingUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const storedHashedPassword = existingUser[targetSection]?.password || existingUser.base?.password;
+
+        const isPasswordCorrect = await bcrypt.compare(password, storedHashedPassword);
+        if (!isPasswordCorrect) {
+            return res.status(401).json({ message: "The password you entered is incorrect. Authorization denied." });
+        }
         let avatarUrl = null;
 
         // 2. Safely capture stream buffer updates from your file parser middleware (Multer)
@@ -181,7 +193,7 @@ userController.updateUser = async (req, res, next) => {
             console.log('ℹ️ No new avatar file provided.');
         }
 
-const fieldsToUpdate = {};
+        const fieldsToUpdate = {};
         const targetSection = section || "base"; // Fallback safety catch
 
         if (name) fieldsToUpdate[`${targetSection}.name`] = name;
@@ -208,8 +220,8 @@ const fieldsToUpdate = {};
         return res.status(200).json({ message: 'User updated successfully', data: user });
 
     } catch (err) {
-console.error(err);
-         return res.status(500).json({ message: "Server error", error: err.message });
+        console.error(err);
+        return res.status(500).json({ message: "Server error", error: err.message });
     }
 }
 
@@ -217,7 +229,7 @@ userController.updateProfileUser = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { name, email, telephone, password } = req.body;
-        
+
 
         let avatarUrl = null;
 
@@ -236,7 +248,7 @@ userController.updateProfileUser = async (req, res, next) => {
             avatarUrl = uploadResult.secure_url;
         }
         console.log('uploadResult', uploadResult)
-const fieldsToUpdate = {};
+        const fieldsToUpdate = {};
         const targetSection = section || "base"; // Fallback safety catch
 
         if (name) fieldsToUpdate[`${targetSection}.name`] = name;
