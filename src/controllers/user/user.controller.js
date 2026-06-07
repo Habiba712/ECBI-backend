@@ -158,7 +158,7 @@ userController.register = async (req, res, next) => {
 userController.updateUser = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { section, name, email, telephone, password } = req.body;
+        const { section, name, email, telephone, password , newPassword} = req.body;
         const targetSection = section || "base"; // Fallback safety catch
 
         if (!password || password === "" || password === "undefined") {
@@ -173,6 +173,12 @@ userController.updateUser = async (req, res, next) => {
         const isPasswordCorrect = await bcrypt.compare(password, storedHashedPassword);
         if (!isPasswordCorrect) {
             return res.status(401).json({ message: "The password you entered is incorrect. Authorization denied." });
+        }
+
+        if (newPassword && newPassword !== "" && newPassword !== "undefined") {
+            console.log('🔐 New password string identified. Compiling cryptographic salt...');
+            
+            fieldsToUpdate[`${targetSection}.password`] = await bcrypt.hash(newPassword, 10);
         }
         let avatarUrl = null;
 
