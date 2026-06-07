@@ -5,7 +5,8 @@ const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const PointOfSale = require('../../models/pointOfSale.model');
 const { z, ZodError } = require("zod");
-
+const FileUpload = require('../../models/media.model'); // Import your mongoose model
+const cloudinary = require('../../config/cloudinary');
 const userController = {};
 
 userController.createOwner = async (req, res, next) => {
@@ -158,9 +159,7 @@ userController.updateUser = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { section, name, email, telephone, password } = req.body;
-        console.log('updateData', section, updateData)
-      console.log('📦 Processing section:', section);
-        console.log('✏️ Processing field variables:', { name, email, telephone });
+       
 
         let avatarUrl = null;
 
@@ -178,7 +177,10 @@ userController.updateUser = async (req, res, next) => {
             });
             avatarUrl = uploadResult.secure_url;
         }
-        console.log('uploadResult', uploadResult)
+        else {
+            console.log('ℹ️ No new avatar file provided.');
+        }
+
 const fieldsToUpdate = {};
         const targetSection = section || "base"; // Fallback safety catch
 
@@ -206,7 +208,8 @@ const fieldsToUpdate = {};
         return res.status(200).json({ message: 'User updated successfully', data: user });
 
     } catch (err) {
-
+console.error(err);
+         return res.status(500).json({ message: "Server error", error: err.message });
     }
 }
 
