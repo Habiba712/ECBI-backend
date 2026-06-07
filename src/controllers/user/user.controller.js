@@ -159,6 +159,7 @@ userController.updateUser = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { section, name, email, telephone, password } = req.body;
+        const targetSection = section || "base"; // Fallback safety catch
 
         if (!password || password === "" || password === "undefined") {
             return res.status(400).json({ message: "Confirming your current password is required to save changes." });
@@ -194,7 +195,6 @@ userController.updateUser = async (req, res, next) => {
         }
 
         const fieldsToUpdate = {};
-        const targetSection = section || "base"; // Fallback safety catch
 
         if (name) fieldsToUpdate[`${targetSection}.name`] = name;
         if (email) fieldsToUpdate[`${targetSection}.email`] = email;
