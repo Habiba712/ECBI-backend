@@ -164,22 +164,44 @@ postController.getPostByOwnerId = async (req, res, next) => {
 };
 
 
-postController.likes= async (req, res, next) => {
+postController.likes = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const {userId, newLikes} = req.body;
-    const post = await Post.findById(id);
-    if (!post) {
+    const { userId, newLikes } = req.body;
+
+    // 1. Structural Payload Validations
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required to modify likes array" });
+    }
+    if (newLikes !== 1 && newLikes !== -1) {
+      return res.status(400).json({ message: "Invalid payload: newLikes must be exactly 1 or -1" });
+    }
+
+    // 2. Select MongoDB array modifier depending on the incoming integer
+    // If 1: use $addToSet to add the userId uniquely (ignores duplicates)
+    // If -1: use $pull to strip the userId completely from the array
+    const updateOperator = newLikes === 1 
+      ? { $addToSet: { likes: userId } } 
+      : { $pull: { likes: userId } };
+
+    // 3. Atomically update the document and return the freshly modified array
+    const updatedPost = await Post.findByIdAndUpdate(
+      id,
+      updateOperator,
+      { new: true } // Crucial: gives us the array AFTER the push/pull happens
+    );
+
+    if (!updatedPost) {
       return res.status(404).json({ message: "Post not found" });
     }
-    const likes = await post.likes;
-    if (!likes) {
-      const updatedPost = likes + newLikes;
-      await Post.findByIdAndUpdate(id, {
-        $set: { likes: updatedPost },
-      });
-      return res.status(200).json({ message: "Likes updated successfully", likes: updatedPost });
-    }
+
+    // 4. Guaranteed Terminal Response: Dynamically calculate count via .length
+    return res.status(200).json({ 
+      message: newLikes === 1 ? "Like added successfully" : "Like removed successfully", 
+      likesCount: updatedPost.likes.length, // Extracted directly from array footprint
+      likes: updatedPost.likes 
+    });
+
   } catch (error) {
     next(error);
   }

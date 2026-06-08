@@ -37,7 +37,7 @@ comments: [{
     }],
 likes:[{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Like',
+        ref: 'User',
         required: false
     }],
 shares:[{
