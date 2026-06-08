@@ -129,7 +129,7 @@ const updatedUser = await User.findById(owner);
 postController.getPostById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const post = await Post.findById(id).;
+    const post = await Post.findById(id);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
