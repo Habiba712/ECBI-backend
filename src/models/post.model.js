@@ -31,9 +31,19 @@ const PostSchema = new mongoose.Schema(
     // A UNIQUE referral link per post?? BAD IDEA
    
 comments: [{
+       userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Comment',
-        required: false
+        ref: "User", // Allows you to populate user data (avatar, name) for the comment UI
+        required: true
+    },
+    comment: {
+        type: String,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now // Tracks when the comment was posted natively
+    }
     }],
 likes:[{
         type: mongoose.Schema.Types.ObjectId,

@@ -20,6 +20,7 @@ router.post('/createPost',upload.single('image'), postController.createPost
  router.get('/getPostById/:id', postController.getPostById);
  router.get('/getPostByOwnerId/:id', postController.getPostByOwnerId);
  router.put('/likes/:id', postController.likes);
+ router.post('/comments/:id', postController.comments);
 
 // router.get('/getPointOfSale/:name',  
     

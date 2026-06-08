@@ -206,4 +206,50 @@ postController.likes = async (req, res, next) => {
     next(error);
   }
 };
+
+postController.comments = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { userId, comment } = req.body;
+
+    // 1. Structural Payload Validations
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required to modify comments array" });
+    }
+    if (comment == "" || comment === undefined) {
+      return res.status(400).json({ message: "Invalid payload: comment must be a non-empty string" });
+    }
+
+   
+    const updateOperator = comment !== "" 
+      && { $addToSet:
+         {comments: {
+            userId: userId,
+            comment: comment
+          }
+        }
+      };
+        
+
+    const updatedPost = await Post.findByIdAndUpdate(
+      id,
+      updateOperator,
+      { new: true } // Crucial: gives us the array AFTER the push/pull happens
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // 4. Guaranteed Terminal Response: Dynamically calculate count via .length
+    return res.status(200).json({ 
+      message: comment !== "" && "Comment added successfully" ,
+      commentsCount: updatedPost.comments.length, // Extracted directly from array footprint
+       
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
 module.exports = postController;
