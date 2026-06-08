@@ -97,6 +97,7 @@ console.log('req.file', req.file);
     });
     await newNotif.save();
 
+
     // Add post to User
 const updatedUser = await User.findById(owner);
     if (!updatedUser) {
@@ -124,14 +125,6 @@ const updatedUser = await User.findById(owner);
     return res.json({ message: error.message });
   }
 };
-
-
-
-
-
-
-
-
 
 postController.getPostById = async (req, res, next) => {
   try {
@@ -165,6 +158,28 @@ postController.getPostByOwnerId = async (req, res, next) => {
       return res.status(404).json({ message: "Post not found" });
     }
     return res.status(200).json(posts);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+postController.likes= async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const {userId, newLikes} = req.body;
+    const post = await Post.findById(id);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const likes = await post.likes;
+    if (!likes) {
+      const updatedPost = likes + newLikes;
+      await Post.findByIdAndUpdate(id, {
+        $set: { likes: updatedPost },
+      });
+      return res.status(200).json({ message: "Likes updated successfully", likes: updatedPost });
+    }
   } catch (error) {
     next(error);
   }
