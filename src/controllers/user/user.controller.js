@@ -12,17 +12,16 @@ const userController = {};
 userController.createOwner = async (req, res, next) => {
     try {
         const { email,
-            userName,
+            name,
             telephone,
-            avatar,
             businessName,
             pointOfSaleName,
             password
 
         } = req.body;
-        console.log(email, userName, pointOfSaleName, password, telephone)
+        console.log(email, name, pointOfSaleName, password, telephone)
 
-        const existingUser = await User.findOne({ "ownerInfo.email": email });
+        const existingUser = await User.findOne({ "base.email": email });
         if (existingUser) {
             return res.status(400).json({ message: "User Already Exists in the database" });
 
@@ -36,18 +35,14 @@ userController.createOwner = async (req, res, next) => {
         }
 
         //check if the point of sale is already owned by ANOTHER user
-        if (checkPointOfSale.ownerId !== null) {
-            console.log("Point Of Sal Already Owned")
-            return res.status(400).json({ message: "Point Of Sale Already Owned" });
-        }
+      
 
         const newUser = new User({
             base: {
                 email,
-                username: userName,
+                name: name,
                 telephone,
                 role: "RESTO_SUPER_ADMIN",
-                avatar,
                 password: await bcrypt.hash(password, 10)
 
             },
@@ -56,7 +51,18 @@ userController.createOwner = async (req, res, next) => {
                 ownedPos: [checkPointOfSale._id],
             }
         })
-
+//   if (checkPointOfSale.ownerId !== null) {
+//             console.log("Point Of Sal Already Owned")
+//             return res.status(400).json({ message: "Point Of Sale Already Owned" });
+//         }
+//         else 
+if(checkPointOfSale.ownerId === "" || checkPointOfSale.ownerId === undefined){
+            const updatedPointOfSale = await PointOfSale.findByIdAndUpdate(checkPointOfSale._id, {
+                $set: {
+                    ownerId: newUser._id
+                }
+            });
+        }
         await newUser.save();
         return res.status(201).json({ message: "User Created Successfully", user: newUser });
     } catch (err) {
