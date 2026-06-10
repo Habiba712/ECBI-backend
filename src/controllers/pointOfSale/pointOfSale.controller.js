@@ -155,7 +155,7 @@ pointOfSaleController.unarchivePointOfSale = async (req, res, next) => {
 };
 
 pointOfSaleController.createPointOfSale = async (req, res, next) => {
-    console.log('Creating a new restaurant');
+    console.log('Creating a new restaurant', req.body);
     try {
         const { name,
             ownerId,
@@ -180,7 +180,7 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
             // Upload file to Cloudinary
             const uploadResult = await new Promise((resolve, reject) => {
               const uploadStream = cloudinary.uploader.upload_stream(
-                { folder: "poointOfSale" },
+                { folder: "posts" },
                 (error, result) => {
                   if (error) return reject(error);
                   resolve(result);
@@ -198,7 +198,7 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
        
 
        
-
+console.log("CLOUDINARY KEY:", process.env.CLOUDINARY_API_KEY);
         // Create a new restaurant document
         const newRestaurant = new PointOfSale({
            name,
