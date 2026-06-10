@@ -107,8 +107,9 @@ referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
         }
       }
     }).populate('referrerUser');
+    conso
     if(referralLinks){
-      // console.log('referralLinks', referralLinks);
+      console.log('referralLinks', referralLinks);
     }
 
     return res.status(200).json(referralLinks);
