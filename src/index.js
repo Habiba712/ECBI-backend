@@ -1,7 +1,9 @@
 // ? (creates http server; attach socket.io here if you want)
+require('dotenv').config();
 
 const http = require('http');
 const app = require('./app');
+
 const { connectDB } = require('./config/db');
 const { port } = require('./config');
 

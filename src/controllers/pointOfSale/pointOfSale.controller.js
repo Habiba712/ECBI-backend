@@ -7,7 +7,96 @@ const cloudinary = require('../../config/cloudinary'); // Import Cloudinary conf
 const User = require('../../models/user.model');
 
 
+pointOfSaleController.createPointOfSale = async (req, res, next) => {
+    console.log('Creating a new restaurant', req.body);
+    try {
+        const { name,
+            ownerId,
+            website,
+            address:{
+                city,
+                country,
+                state,
+                street,
+                zipCode
+            },
+            
+            phone,
+            description,
+            cuisine,
+            status
+        } = req.body;
+         if (!req.file) {
+              return res.status(400).json({ message: "No image uploaded" });
+            }
+        console.log('req.file', req.file);
+            // Upload file to Cloudinary
+            const uploadResult = await new Promise((resolve, reject) => {
+              const uploadStream = cloudinary.uploader.upload_stream(
+                { folder: "posts" },
+                (error, result) => {
+                  if (error) return reject(error);
+                  resolve(result);
+                }
+              );
+              uploadStream.end(req?.file?.buffer);
+            });
+        const user = await User.findById(ownerId);
+   
+        // Check if the restaurant name already exists
+        const existingResto = await PointOfSale.findOne({ name });
+        if (existingResto) {
+            return res.status(400).json({ success: false, message: 'Restaurant with this name already exists.' });
+        }
+       
 
+       
+console.log("CLOUDINARY KEY:", process.env.CLOUDINARY_API_KEY);
+        // Create a new restaurant document
+        const newRestaurant = new PointOfSale({
+           name,
+            ownerId,
+            website,
+            address: {
+                city,
+                country,
+                state,
+                street,
+                zipCode
+            }
+            
+            , coverImage: uploadResult.secure_url,
+            phone,
+           
+            description,
+            cuisine,
+            status
+            // Optional, can be undefined
+        });
+     if(!user){
+            return res.status(400).json({message: "User does not exist"})
+        }
+        console.log('user', user)
+        const updateOwnerInfo = await User.findByIdAndUpdate({_id: ownerId}, {
+            $push: {
+                "ownerInfo.ownedPos": new mongoose.Types.ObjectId(newRestaurant._id)
+            }
+        });
+        console.log('updateOwnerInfo', updateOwnerInfo)
+        const id= newRestaurant._id;
+  const qrData = `${process.env.FRONTEND_URL}/pages/posts/createPost/${id}`
+
+          
+      // Generate QR code as data URL
+                const qrCodeImage = await QRCode.toDataURL(qrData);
+        newRestaurant.qrCodeData = qrCodeImage;
+        const restaurant = await newRestaurant.save();
+        res.status(201).json({ success: true, data: restaurant });
+    } catch (err) {
+        console.error('Error creating restaurant:', err.message);
+        res.status(500).json({ error: 'Failed to create restaurant' });
+    }
+};
 pointOfSaleController.getPointOfSale= async (req, res) => {
     try {
         console.log('Fetching visible restaurants');
@@ -154,96 +243,7 @@ pointOfSaleController.unarchivePointOfSale = async (req, res, next) => {
     }
 };
 
-pointOfSaleController.createPointOfSale = async (req, res, next) => {
-    console.log('Creating a new restaurant', req.body);
-    try {
-        const { name,
-            ownerId,
-            website,
-            address:{
-                city,
-                country,
-                state,
-                street,
-                zipCode
-            },
-            
-            phone,
-            description,
-            cuisine,
-            status
-        } = req.body;
-         if (!req.file) {
-              return res.status(400).json({ message: "No image uploaded" });
-            }
-        console.log('req.file', req.file);
-            // Upload file to Cloudinary
-            const uploadResult = await new Promise((resolve, reject) => {
-              const uploadStream = cloudinary.uploader.upload_stream(
-                { folder: "posts" },
-                (error, result) => {
-                  if (error) return reject(error);
-                  resolve(result);
-                }
-              );
-              uploadStream.end(req.file.buffer);
-            });
-        const user = await User.findById(ownerId);
-   
-        // Check if the restaurant name already exists
-        const existingResto = await PointOfSale.findOne({ name });
-        if (existingResto) {
-            return res.status(400).json({ success: false, message: 'Restaurant with this name already exists.' });
-        }
-       
 
-       
-console.log("CLOUDINARY KEY:", process.env.CLOUDINARY_API_KEY);
-        // Create a new restaurant document
-        const newRestaurant = new PointOfSale({
-           name,
-            ownerId,
-            website,
-            address: {
-                city,
-                country,
-                state,
-                street,
-                zipCode
-            }
-            
-            , coverImage: uploadResult.secure_url,
-            phone,
-           
-            description,
-            cuisine,
-            status
-            // Optional, can be undefined
-        });
-     if(!user){
-            return res.status(400).json({message: "User does not exist"})
-        }
-        console.log('user', user)
-        const updateOwnerInfo = await User.findByIdAndUpdate({_id: ownerId}, {
-            $push: {
-                "ownerInfo.ownedPos": new mongoose.Types.ObjectId(newRestaurant._id)
-            }
-        });
-        console.log('updateOwnerInfo', updateOwnerInfo)
-        const id= newRestaurant._id;
-  const qrData = `${process.env.FRONTEND_URL}/pages/posts/createPost/${id}`
-
-          
-      // Generate QR code as data URL
-                const qrCodeImage = await QRCode.toDataURL(qrData);
-        newRestaurant.qrCodeData = qrCodeImage;
-        const restaurant = await newRestaurant.save();
-        res.status(201).json({ success: true, data: restaurant });
-    } catch (err) {
-        console.error('Error creating restaurant:', err.message);
-        res.status(500).json({ error: 'Failed to create restaurant' });
-    }
-};
 
 // Mettre à jour un restaurant
 pointOfSaleController.updatePointOfSale = async (req, res) => {

@@ -8,11 +8,7 @@ const multer = require('multer');
 const storage = multer.memoryStorage(); 
 const upload = multer({ storage });
 
-router.post('/addPointOfSale',
-    // authMiddleware,
-    //   checkRole(["SUPER_ADMIN","RESTO_SUPER_ADMIN"]), 
-     upload.single('image'),
-     pointOfSaleController.createPointOfSale);
+router.post('/addPointOfSale',upload.single('image'),pointOfSaleController.createPointOfSale);
 
 router.get('/getPointOfSale/:name',  
     
