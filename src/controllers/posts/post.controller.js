@@ -78,7 +78,7 @@ console.log('req.file', req.file);
     // Create post
     const newPost = new Post({
       owner: owner,
-      referralUser: referralUser,
+      referralUser: referralUser || "",
       pos: pos,
       photoUrl: uploadResult.secure_url,
       caption,
@@ -87,15 +87,15 @@ console.log('req.file', req.file);
 
      await newPost.save();
 
-     // the notification should probably be created here, no? 
-     console.log('referralUser', referralUser);
-     console.log('owner', owner);
+    if(referralUser){
     const newNotif = new Notification({
       recipient: referralUser,
       sender: owner, // not the owner of the post, the owner of the referral link that was sent.
       message: 'You gained 50 points via referral link to ' 
     });
-    await newNotif.save();
+      await newNotif.save();
+
+  }
 
 
     // Add post to User
