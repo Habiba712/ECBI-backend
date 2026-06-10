@@ -173,6 +173,32 @@ authController.logout = async (req, res) => {
 };
 
 
+authController.verifySession = async (req, res, next) => {
+     console.log('Valid token payload:', req.user);
+    
+    try {
+       
+        const dbUser = await User.findById(req.user._id).select('-base.password');  
+         if (!dbUser) {
+             console.log(`User ID ${req.user._id} was deleted. invalidating session.`);
+            return res.status(401).json({ message: 'User associated with this session no longer exists.' });
+        }
+
+        //  if (dbUser.base && dbUser.base.enabled === false) {
+        //     console.log(`User ID ${req.user._id} is disabled. invalidating session.`);
+        //     return res.status(401).json({ message: 'Account is disabled.' });
+        // }
+
+        return res.status(200).json({
+            message: 'Session valid',
+            user: dbUser 
+        });
+
+    } catch (err) {
+         console.error('Session verification database error:', err);
+        next(err);  
+    }
+};
 module.exports = authController;
 
 // exports.register = async (req, res, next) => {
