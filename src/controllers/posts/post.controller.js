@@ -52,8 +52,10 @@ postController.createPost = async (req, res) => {
    const { caption, owner, referralUser, pos } = req.body;
    console.log('referralUser hhhhhhhhhhh', referralUser);
   const newReferralUser =
-  req?.body?.referralUser && req?.body?.referralUser !== ""
-    ? req?.body?.referralUser
+  req.body.referralUser &&
+  req.body.referralUser !== "" &&
+  req.body.referralUser !== "null"
+    ? req.body.referralUser
     : undefined;
    
  
