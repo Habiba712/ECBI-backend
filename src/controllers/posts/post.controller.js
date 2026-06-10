@@ -51,6 +51,7 @@ postController.createPost = async (req, res) => {
     console.log('create post', req.body);
    const { caption, owner, referralUser, pos } = req.body;
    console.log('referralUser hhhhhhhhhhh', referralUser);
+   console.log('owner', owner);
   const newReferralUser =
   req.body.referralUser &&
   req.body.referralUser !== "" &&
@@ -105,8 +106,8 @@ console.log('req.file', req.file);
     });
     if(newReferralUser){
     const newNotif = new Notification({
-      recipient: newReferralUser,
-      sender: owner, // not the owner of the post, the owner of the referral link that was sent.
+      recipient: owner,
+      sender: newReferralUser, // not the owner of the post, the owner of the referral link that was sent.
       message: 'You gained 50 points via referral link to ' 
     });
       await newNotif.save();
