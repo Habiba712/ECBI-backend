@@ -48,6 +48,7 @@ postController.createPost = async (req, res) => {
   try {
     console.log('create post', req.body);
    const { caption, owner, referralUser, pos } = req.body;
+  
    console.log('referralUser', referralUser);
  
     if (!owner || !pos) {
@@ -78,7 +79,7 @@ console.log('req.file', req.file);
     // Create post
     const newPost = new Post({
       owner: owner,
-      referralUser: referralUser || "",
+      referralUser: referralUser || null,
       pos: pos,
       photoUrl: uploadResult.secure_url,
       caption,
@@ -87,9 +88,13 @@ console.log('req.file', req.file);
 
      await newPost.save();
 
-     const updatedVisitedSpots = await User.findByIdAndUpdate(owner, {
-      $push: { visitedSpots: pos }
-     });
+     const updatedVisitedSpots = await PointOfSale.findByIdAndUpdate({_id: owner}, {
+      finalUser: {
+        $push: {
+          visits: pos
+        }
+      }
+    });
     if(referralUser){
     const newNotif = new Notification({
       recipient: referralUser,
