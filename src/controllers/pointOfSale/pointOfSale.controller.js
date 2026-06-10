@@ -2,6 +2,8 @@ const { default: mongoose } = require('mongoose');
 const PointOfSale = require('../../models/pointOfSale.model');
 const QRCode = require('qrcode');
 const pointOfSaleController = {};
+const FileUpload = require('../../models/media.model'); // Import your mongoose model
+const cloudinary = require('../../config/cloudinary'); // Import Cloudinary config
 const User = require('../../models/user.model');
 
 
@@ -165,12 +167,27 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
                 street,
                 zipCode
             },
-            coverImage,
+            
             phone,
             description,
             cuisine,
             status
         } = req.body;
+         if (!req.file) {
+              return res.status(400).json({ message: "No image uploaded" });
+            }
+        console.log('req.file', req.file);
+            // Upload file to Cloudinary
+            const uploadResult = await new Promise((resolve, reject) => {
+              const uploadStream = cloudinary.uploader.upload_stream(
+                { folder: "poointOfSale" },
+                (error, result) => {
+                  if (error) return reject(error);
+                  resolve(result);
+                }
+              );
+              uploadStream.end(req.file.buffer);
+            });
         const user = await User.findById(ownerId);
    
         // Check if the restaurant name already exists
@@ -195,7 +212,7 @@ pointOfSaleController.createPointOfSale = async (req, res, next) => {
                 zipCode
             }
             
-            , coverImage,
+            , coverImage: uploadResult.secure_url,
             phone,
            
             description,

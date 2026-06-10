@@ -11,15 +11,16 @@ const userController = {};
 
 userController.createOwner = async (req, res, next) => {
     try {
-        const { email,
+        const {
+             email,
             name,
             telephone,
             businessName,
-            pointOfSaleName,
+            // pointOfSaleName,
             password
 
         } = req.body;
-        console.log(email, name, pointOfSaleName, password, telephone)
+        console.log(email, name, password, telephone)
 
         const existingUser = await User.findOne({ "base.email": email });
         if (existingUser) {
@@ -27,12 +28,12 @@ userController.createOwner = async (req, res, next) => {
 
         }
 
-        const checkPointOfSale = await PointOfSale.findOne({ name: pointOfSaleName });
-        // console.log('point of sale',checkPointOfSale)
-        console.log('checkPointOfSale', checkPointOfSale.name)
-        if (!checkPointOfSale) {
-            return res.status(400).json({ message: "Point Of Sale Doesn Not Exsist" })
-        }
+        // const checkPointOfSale = await PointOfSale.findOne({ name: pointOfSaleName });
+        // // console.log('point of sale',checkPointOfSale)
+        // console.log('checkPointOfSale', checkPointOfSale.name)
+        // if (!checkPointOfSale) {
+        //     return res.status(400).json({ message: "Point Of Sale Doesn Not Exsist" })
+        // }
 
         //check if the point of sale is already owned by ANOTHER user
       
@@ -47,8 +48,8 @@ userController.createOwner = async (req, res, next) => {
 
             },
             ownerInfo: {
-                businessName,
-                ownedPos: [checkPointOfSale._id],
+                businessName
+                // ownedPos: [checkPointOfSale._id],
             }
         })
 //   if (checkPointOfSale.ownerId !== null) {
@@ -56,25 +57,15 @@ userController.createOwner = async (req, res, next) => {
 //             return res.status(400).json({ message: "Point Of Sale Already Owned" });
 //         }
 //         else 
-if(checkPointOfSale.ownerId === "" || checkPointOfSale.ownerId === undefined){
-            const updatedPointOfSale = await PointOfSale.findByIdAndUpdate(checkPointOfSale._id, {
-                $set: {
-                    ownerId: newUser._id
-                }
-            });
-        }
+// if(checkPointOfSale.ownerId === "" || checkPointOfSale.ownerId === undefined){
+//             const updatedPointOfSale = await PointOfSale.findByIdAndUpdate(checkPointOfSale._id, {
+//                 $set: {
+//                     ownerId: newUser._id
+//                 }
+//             });
+//         }
         await newUser.save();
         return res.status(201).json({ message: "User Created Successfully", user: newUser });
-    } catch (err) {
-        next(err)
-    }
-}
-
-userController.getAllUsers = async (req, res, next) => {
-    try {
-        const users = await User.find();
-        return res.status(200).json({ message: 'Users found', data: users });
-
     } catch (err) {
         next(err)
     }
@@ -94,6 +85,16 @@ userController.updateOwner = async (req, res, next) => {
         next(err)
     }
 }
+userController.getAllUsers = async (req, res, next) => {
+    try {
+        const users = await User.find();
+        return res.status(200).json({ message: 'Users found', data: users });
+
+    } catch (err) {
+        next(err)
+    }
+}
+
 
 userController.register = async (req, res, next) => {
 

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-const FileUpload = require('../../models/media.model'); // Import your mongoose model
-const cloudinary = require('../../config/cloudinary'); // Import Cloudinary config
+const FileUpload = require('../../models/media.model'); 
+const cloudinary = require('../../config/cloudinary'); 
  const Post = require('../../models/post.model');
 const User = require('../../models/user.model');
 const PointOfSale = require('../../models/pointOfSale.model');

@@ -7,7 +7,7 @@ const authMiddleware = require('../middlewares/auth.middleware');
 const checkRole = require('../middlewares/roles.middleware');
 const postController = require('../controllers/posts/post.controller');
 const multer = require('multer');
-const storage = multer.memoryStorage(); // store in memory to send to cloudinary
+const storage = multer.memoryStorage(); 
 const upload = multer({ storage });
 
 router.post('/scanQr', postController.scanQr

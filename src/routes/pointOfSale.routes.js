@@ -4,10 +4,14 @@
 const pointOfSaleController = require('../controllers/pointOfSale/pointOfSale.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
 const checkRole = require('../middlewares/roles.middleware');
+const multer = require('multer');
+const storage = multer.memoryStorage(); 
+const upload = multer({ storage });
 
 router.post('/addPointOfSale',
     // authMiddleware,
     //   checkRole(["SUPER_ADMIN","RESTO_SUPER_ADMIN"]), 
+     upload.single('image'),
      pointOfSaleController.createPointOfSale);
 
 router.get('/getPointOfSale/:name',  
