@@ -45,6 +45,8 @@ postController.scanQr = async (req, res, next) => {
 
 
 postController.createPost = async (req, res) => {
+  console.log("CREATE POST HIT");
+
   try {
     console.log('create post', req.body);
    const { caption, owner, referralUser, pos } = req.body;
