@@ -16,5 +16,5 @@ router.post('/login', authCtrl.login);
 router.post('/forgot-password', authCtrl.forgotPassword);
 router.post('/reset-password', authCtrl.resetPassword);
 router.post('/logout', authCtrl.logout);
-router.get('/verify-session', authCtrl.verifySession, authMiddleware);
+router.get('/verify-session', authMiddleware,authCtrl.verifySession);
 module.exports = router;
