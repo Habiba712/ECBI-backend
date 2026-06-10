@@ -87,6 +87,9 @@ console.log('req.file', req.file);
 
      await newPost.save();
 
+     const updatedVisitedSpots = await User.findByIdAndUpdate(owner, {
+      $push: { visitedSpots: pos }
+     });
     if(referralUser){
     const newNotif = new Notification({
       recipient: referralUser,
