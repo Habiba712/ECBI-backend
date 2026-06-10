@@ -27,8 +27,7 @@ const pointOfSaleSchema = new mongoose.Schema({
     coordinates: {
       latitude: Number,
       longitude: Number
-    },
-    required: false
+    }
   },
   posts:[{
     type: mongoose.Schema.Types.ObjectId,
@@ -63,8 +62,7 @@ const pointOfSaleSchema = new mongoose.Schema({
   // === BUSINESS DETAILS ===
   description: {
     type: String,
-    maxlength: 1000,
-    required: false
+    maxlength: 1000
   },
   cuisine: {
     type: String,
@@ -72,8 +70,7 @@ const pointOfSaleSchema = new mongoose.Schema({
       'Italian','Moroccan', 'Japanese', 'American', 'Mexican', 'Thai', 
       'Chinese', 'Indian', 'French', 'Mediterranean', 
       'Korean', 'Vietnamese', 'Greek', 'Spanish', 'Cafe', 'Other'
-    ],
-    required: false
+    ]
   },
   priceRange: {
     type: String,
