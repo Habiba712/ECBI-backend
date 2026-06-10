@@ -51,7 +51,7 @@ postController.createPost = async (req, res) => {
     console.log('create post', req.body);
    const { caption, owner, referralUser, pos } = req.body;
    console.log('referralUser hhhhhhhhhhh', referralUser);
-  const referralUser =
+  const newReferralUser =
   req?.body?.referralUser && req?.body?.referralUser !== ""
     ? req?.body?.referralUser
     : undefined;
@@ -85,7 +85,7 @@ console.log('req.file', req.file);
     // Create post
     const newPost = new Post({
       owner: owner,
-      referralUser: referralUser,
+      referralUser: newReferralUser,
       pos: pos,
       photoUrl: uploadResult.secure_url,
       caption,
@@ -103,7 +103,7 @@ console.log('req.file', req.file);
     });
     if(referralUser){
     const newNotif = new Notification({
-      recipient: referralUser,
+      recipient: newReferralUser,
       sender: owner, // not the owner of the post, the owner of the referral link that was sent.
       message: 'You gained 50 points via referral link to ' 
     });
@@ -135,8 +135,11 @@ const updatedUser = await User.findById(owner);
       post: newPost,
     });
   } catch (error) {
-    console.error('Error creating post', error);
-    return res.json({ message: error.message });
+   console.error(err);
+   return res.status(500).json({
+      success:false,
+      message: err.message
+   });
   }
 };
 
