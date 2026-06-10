@@ -51,7 +51,10 @@ postController.createPost = async (req, res) => {
     console.log('create post', req.body);
    const { caption, owner, referralUser, pos } = req.body;
    console.log('referralUser hhhhhhhhhhh', referralUser);
-  
+  const referralUser =
+  req?.body?.referralUser && req?.body?.referralUser !== ""
+    ? req?.body?.referralUser
+    : undefined;
    
  
     if (!owner || !pos) {
@@ -82,7 +85,7 @@ console.log('req.file', req.file);
     // Create post
     const newPost = new Post({
       owner: owner,
-      referralUser: referralUser || null,
+      referralUser: referralUser,
       pos: pos,
       photoUrl: uploadResult.secure_url,
       caption,
