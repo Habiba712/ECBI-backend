@@ -134,7 +134,7 @@ const updatedUser = await User.findById(owner);
       message: "Post created successfully",
       post: newPost,
     });
-  } catch (error) {
+  } catch (err) {
    console.error(err);
    return res.status(500).json({
       success:false,
