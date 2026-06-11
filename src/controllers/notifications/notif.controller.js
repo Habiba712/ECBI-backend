@@ -25,8 +25,8 @@ notifController.createNotification = async (req, res) => {
         const { recipientId, senderId, message } = req.body;
 
         const notif = new Notification({
-            recipient: recipientId,
-            sender: senderId,
+            recipient:senderId ,
+            sender: recipientId,
             message: message
         });
         await notif.save();
