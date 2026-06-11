@@ -5,7 +5,7 @@ const notifController = {};
 notifController.getByReceipient = async (req, res) => {
     try{
         const userId = req.params.userId;
-        const notifs = await Notification.find({ recipient: userId }).populate('sender');
+        const notifs = await Notification.find({ sender: userId }).populate('sender');
         res.status(200).json(notifs);
 
     }catch(err){
