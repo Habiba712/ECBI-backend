@@ -174,7 +174,6 @@ authController.logout = async (req, res) => {
 
 
 authController.verifySession = async (req, res, next) => {
-     console.log('Valid token payload:', req.user);
     
     try {
        
