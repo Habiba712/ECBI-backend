@@ -50,6 +50,11 @@ router.put('/updateProfileUser/:id',upload.single('avatar'),
   // authMiddleware, 
   // checkRole(['SUPER_ADMIN']), 
   userController.updateProfileUser);
+
+router.put('/updateUserPoints/:id',
+  // authMiddleware, 
+  // checkRole(['SUPER_ADMIN']), 
+  userController.updateUserPoints);
 router.delete('/deleteUser/:id',
   // authMiddleware, 
   // checkRole(['SUPER_ADMIN']),
