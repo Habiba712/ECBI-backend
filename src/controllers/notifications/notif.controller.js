@@ -9,8 +9,7 @@ notifController.getByReceipient = async (req, res) => {
         res.status(200).json(notifs);
 
     }catch(err){
-        console.err('Error fetching notifications: ', err);
-        res.status(400).json({ message: 'Error fetching notifications' });
+         res.status(400).json({ message: 'Error fetching notifications' });
     }
 }
 
