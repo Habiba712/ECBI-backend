@@ -236,6 +236,23 @@ userController.updateUser = async (req, res, next) => {
     }
 }
 
+userController.updateUserPoints = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { points } = req.body;
+        const user = await User.findByIdAndUpdate(id, { $set: { "finalUser.points": points } });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        return res.status(200).json({ message: 'User updated successfully', data: user });
+
+    } catch (err) {
+        next(err)
+    }
+}
+
 userController.updateProfileUser = async (req, res, next) => {
     try {
         const { id } = req.params;
