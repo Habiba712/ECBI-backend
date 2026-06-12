@@ -90,6 +90,11 @@ points: {
         required: false,
         default: 0
     },
+redeemedPoints: {
+        type: Number,
+        required: false,
+        default: 0
+    },
     posts:[{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post',
