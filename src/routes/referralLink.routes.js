@@ -31,6 +31,12 @@ router.get('/getReferralLinksByUserId/:userId',
     // checkRole(['SUPER_ADMIN']),
     referralLinkController.getReferralLinksByUserId
 );
+
+router.get('/getReferralLinksForWallet/:userId',
+    // authMiddleware,
+    // checkRole(['SUPER_ADMIN']),
+    referralLinkController.getReferralLinksForWallet
+);
 module.exports = router;
 
 // https://ecbi-backend.onrender.com/api/referralLink/getReferralLinkByLink/29qe5voh

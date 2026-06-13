@@ -91,6 +91,29 @@ referralLinkController.getReferralLinksByUserId = async (req, res, next)=>{
   }
 }
 
+referralLinkController.getReferralLinksForWallet = async (req, res, next)=>{
+   const { userId } = req.params;
+
+  console.log('userId', userId);
+  try{
+  const referralLinks = await ReferralLink.find({
+  referrerUser: userId
+}).populate('referredUsers.user');
+
+const result = referralLinks.map(link => ({
+  ...link.toObject(),
+  referredUsers: link.referredUsers.filter(
+    referredUser => referredUser.isActive === true &&
+    referredUser?.tempId === null && referredUser?.user?.base?.role === 'FINAL_USER'
+  )
+})).filter(link => link.referredUsers.length > 0);
+
+return res.status(200).json(result);
+  }catch(err){
+    next(err)
+  }
+}
+
 referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
   const {posId, visitorId} = req.query;
   console.log('posId', posId);
