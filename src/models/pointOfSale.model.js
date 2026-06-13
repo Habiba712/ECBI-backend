@@ -42,7 +42,7 @@ const pointOfSaleSchema = new mongoose.Schema({
     maxlength: 1000,
     required: false
   },
-  
+  // https://ecbi-frontend-9ww4.vercel.app/ref/ozxh8as3
   // === QR CODE & BRANDING ===
   qrCodeData: {
     type: String,
