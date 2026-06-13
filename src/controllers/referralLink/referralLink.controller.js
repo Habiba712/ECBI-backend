@@ -84,7 +84,7 @@ referralLinkController.getReferralLinksByUserId = async (req, res, next)=>{
 
   console.log('userId', userId);
   try{
-    const referralLinks = await ReferralLink.find({referrerUser: userId});
+    const referralLinks = await ReferralLink.find({referrerUser: userId}).populate('referrerUsers.user');
     return res.status(200).json(referralLinks);
   }catch(err){
     next(err)
