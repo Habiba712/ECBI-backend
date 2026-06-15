@@ -7,7 +7,7 @@ function generateReferralCode() {
 }
 
 const referralLinkController = {};
-
+// https://ecbi-frontend-9ww4.vercel.app/ref/ozxh8as3
 referralLinkController.createReferralLink = async (req, res, next) =>{
 
     const { userId, posId } = req.body;
