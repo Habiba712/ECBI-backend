@@ -240,6 +240,7 @@ userController.updateUserPoints = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { points, posId } = req.body;
+        const pos_id = posId;
         console.log('updateUserPoints', id, points, posId)
         const user = await User.findById(id);
         
@@ -247,11 +248,11 @@ userController.updateUserPoints = async (req, res, next) => {
             return res.status(404).json({ message: 'User not found' });
         }  
         console.log('uer.finalUSer', user.finalUser)
-       const index = user?.finalUSer?.pointsByPos?.findIndex(p => p.posId === posId);
-
+       const index = user.finalUser.pointsByPos.findIndex(p => p.posId == pos_id);
+console.log('index', index)
        if(index !== -1 && index !== undefined){
         console.log('index', index)
-        user.finalUser.pointsByPos[index].pointsEarned = points;
+        user.finalUser.pointsByPos[index].earnedPoints += points;
        }
        else{
         user.finalUser.pointsByPos.push({
