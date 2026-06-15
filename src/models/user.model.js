@@ -85,13 +85,15 @@ const BaseUserSchema = mongoose.Schema({
 })
 
 const FinalUserSchema = mongoose.Schema({
-points: [ {
+pointsByPos: [ 
+        {
         posId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'PointOfSale'
+            ref: 'PointOfSale',
+            required: true
         },
 
-        points: {
+        earnedPoints: {
             type: Number,
             default: 0
         },

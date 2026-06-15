@@ -12,7 +12,7 @@ const userController = {};
 userController.createOwner = async (req, res, next) => {
     try {
         const {
-             email,
+            email,
             name,
             telephone,
             businessName,
@@ -36,7 +36,7 @@ userController.createOwner = async (req, res, next) => {
         // }
 
         //check if the point of sale is already owned by ANOTHER user
-      
+
 
         const newUser = new User({
             base: {
@@ -52,18 +52,18 @@ userController.createOwner = async (req, res, next) => {
                 // ownedPos: [checkPointOfSale._id],
             }
         })
-//   if (checkPointOfSale.ownerId !== null) {
-//             console.log("Point Of Sal Already Owned")
-//             return res.status(400).json({ message: "Point Of Sale Already Owned" });
-//         }
-//         else 
-// if(checkPointOfSale.ownerId === "" || checkPointOfSale.ownerId === undefined){
-//             const updatedPointOfSale = await PointOfSale.findByIdAndUpdate(checkPointOfSale._id, {
-//                 $set: {
-//                     ownerId: newUser._id
-//                 }
-//             });
-//         }
+        //   if (checkPointOfSale.ownerId !== null) {
+        //             console.log("Point Of Sal Already Owned")
+        //             return res.status(400).json({ message: "Point Of Sale Already Owned" });
+        //         }
+        //         else 
+        // if(checkPointOfSale.ownerId === "" || checkPointOfSale.ownerId === undefined){
+        //             const updatedPointOfSale = await PointOfSale.findByIdAndUpdate(checkPointOfSale._id, {
+        //                 $set: {
+        //                     ownerId: newUser._id
+        //                 }
+        //             });
+        //         }
         await newUser.save();
         return res.status(201).json({ message: "User Created Successfully", user: newUser });
     } catch (err) {
@@ -165,9 +165,9 @@ userController.register = async (req, res, next) => {
 userController.updateUser = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { section, name, email, telephone, password , newPassword} = req.body;
+        const { section, name, email, telephone, password, newPassword } = req.body;
         const targetSection = section || "base"; // Fallback safety catch
- const fieldsToUpdate = {};
+        const fieldsToUpdate = {};
         if (!password || password === "" || password === "undefined") {
             return res.status(400).json({ message: "Confirming your current password is required to save changes." });
         }
@@ -184,7 +184,7 @@ userController.updateUser = async (req, res, next) => {
 
         if (newPassword && newPassword !== "" && newPassword !== "undefined") {
             console.log('🔐 New password string identified. Compiling cryptographic salt...');
-            
+
             fieldsToUpdate[`${targetSection}.password`] = await bcrypt.hash(newPassword, 10);
         }
         let avatarUrl = null;
@@ -207,14 +207,14 @@ userController.updateUser = async (req, res, next) => {
             console.log('ℹ️ No new avatar file provided.');
         }
 
-       
+
 
         if (name) fieldsToUpdate[`${targetSection}.name`] = name;
         if (email) fieldsToUpdate[`${targetSection}.email`] = email;
         if (telephone) fieldsToUpdate[`${targetSection}.telephone`] = telephone;
         if (avatarUrl) fieldsToUpdate[`${targetSection}.avatar`] = avatarUrl;
 
-       
+
 
         // 4. Update the record within MongoDB matching your deep object path assignment
         const user = await User.findByIdAndUpdate(
@@ -228,7 +228,7 @@ userController.updateUser = async (req, res, next) => {
         }
 
 
-        return res.status(200).json({ message: 'User updated successfully', 'password':password, 'newPassword':newPassword });
+        return res.status(200).json({ message: 'User updated successfully', 'password': password, 'newPassword': newPassword });
 
     } catch (err) {
         console.error(err);
@@ -240,19 +240,29 @@ userController.updateUserPoints = async (req, res, next) => {
     try {
         const { id } = req.params;
         const { points, posId } = req.body;
-        const user = await User.findByIdAndUpdate(id,
-             { $set:
-                 { "finalUser.points": {
-                    $push:{
-                        posId: posId,
-                        points: points
-                    }
-                 } } 
-            });
-
-        if (!user) {
+        console.log('updateUserPoints', id, points, posId)
+        const user = await User.findById(id);
+        
+         if (!user) {
             return res.status(404).json({ message: 'User not found' });
-        }
+        }  
+        console.log('uer.finalUSer', user.finalUser)
+       const index = user?.finalUSer?.pointsByPos?.findIndex(p => p.posId === posId);
+
+       if(index !== -1 && index !== undefined){
+        console.log('index', index)
+        user.finalUser.pointsByPos[index].pointsEarned = points;
+       }
+       else{
+        user.finalUser.pointsByPos.push({
+            posId: posId,
+            earnedPoints: points,
+            redeemedPoints: 0
+        })
+       }
+    await user.save();
+        console.log(user?.finalUser?.pointsByPos)
+       
 
         return res.status(200).json({ message: 'User updated successfully', data: user });
 
