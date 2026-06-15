@@ -284,4 +284,28 @@ pointOfSaleController.deletePointOfSale = async (req, res) => {
     }
 };
 
+pointOfSaleController.addReward = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { title, cost, active } = req.body;
+        const restaurant = await PointOfSale.findById(id);
+        if (!restaurant) {
+            return res.status(404).json({ message: 'Restaurant not found' });
+        }
+        const reward = {   
+                title,
+                cost,
+                active
+            }
+        
+        
+        restaurant.rewards.push(reward);
+         await restaurant.save();
+        return res.status(200).json({ message: 'Reward added successfully', data: reward });
+        
+       
+    } catch (err) {
+        next(err);
+    }
+};
 module.exports = pointOfSaleController;

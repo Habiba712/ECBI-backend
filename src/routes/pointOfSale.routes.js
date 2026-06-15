@@ -46,6 +46,10 @@ router.get('/getPointOfSaleQrCode/:id',
     pointOfSaleController.getPointOfSaleQrCode
 );
 
+router.put('/addReward/:id', 
+
+    pointOfSaleController.addReward
+)
 // router.get('/archived', pointDeVenteController.getArchivedRestaurants);
 // router.put('/archived-pointvente/:id', pointDeVenteController.archiveRestaurant)
 // router.put('/unarchived-pointvente/:id', pointDeVenteController.unarchiveRestaurant)

@@ -98,7 +98,8 @@ referralLinkController.getReferralLinksForWallet = async (req, res, next)=>{
   try{
   const referralLinks = await ReferralLink.find({
   referrerUser: userId
-}).populate('referredUsers.user');
+}).populate(['referredUsers.user', 'pos']);
+console.log(referralLinks)
 
 const result = referralLinks.map(link => ({
   ...link.toObject(),

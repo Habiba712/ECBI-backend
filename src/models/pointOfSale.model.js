@@ -16,7 +16,41 @@ const pointOfSaleSchema = new mongoose.Schema({
     required: false,
     index: true  // Index for fast queries!
   },
-  
+  rewards:[
+    {
+      id: mongoose.Schema.Types.ObjectId,
+      title: String,
+      cost: Number,
+      active:{
+        type: Boolean,
+        default: false
+      },
+    }
+  ],
+  Redemption:[
+    {
+      id: mongoose.Schema.Types.ObjectId,
+      rewardId:  {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Reward',
+        required: true
+      },
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+      },
+      status: {
+        type: String,
+        enum: ['active', 'used', 'expired'],
+        default: 'pending'
+      },
+      redeemedAt: {
+        type: Date, 
+        default: Date.now
+      }
+    }
+  ],
   // === CONTACT & LOCATION ===
   address: {
     street: String,
