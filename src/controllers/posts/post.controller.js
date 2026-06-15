@@ -106,26 +106,19 @@ console.log('req.file', req.file);
       }
     });
     if(newReferralUser && newReferralUser !== "" && newReferralUser !== "null" && newReferralUser !== owner){
-      const newGain = await User.findByIdAndUpdate(newReferralUser, {
-        finalUser: {
-          pointsByPos: {
-            $elemMatch: {
-              posId: pos
-            },
-            $set: {
-              earnedPoints: earnedPoints + 50
-            }
-          }
-        }
-      })
-      console.log('new gain', )
-      console.log('newGain', newGain);
+      // const newGain = await User.findByIdAndUpdate(newReferralUser, {
+      //   finalUser: {
+      //     pointsByPos: 
+      //   }
+      // })
+      // console.log('new gain', )
+      // console.log('newGain', newGain);
     const newNotif = new Notification({
       recipient: newReferralUser,
       sender: owner, // not the owner of the post, the owner of the referral link that was sent.
       message: 'You gained 50 points via referral link to ' 
     });
-    await newGain.save();
+    // await newGain.save();
       await newNotif.save();
       console.log('newNotif', newNotif);
 
