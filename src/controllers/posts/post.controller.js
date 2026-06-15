@@ -105,7 +105,7 @@ console.log('req.file', req.file);
         }
       }
     });
-    if(newReferralUser && newReferralUser !== "" && newReferralUser !== "null"){
+    if(newReferralUser && newReferralUser !== "" && newReferralUser !== "null" && newReferralUser !== owner){
     const newNotif = new Notification({
       recipient: newReferralUser,
       sender: owner, // not the owner of the post, the owner of the referral link that was sent.
