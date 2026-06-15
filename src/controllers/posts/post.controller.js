@@ -106,7 +106,7 @@ console.log('req.file', req.file);
       }
     });
     if(newReferralUser && newReferralUser !== "" && newReferralUser !== "null" && newReferralUser !== owner){
-      const newGain = new User.findByIdAndUpdate(newReferralUser, {
+      const newGain = await User.findByIdAndUpdate(newReferralUser, {
         finalUser: {
           pointsByPos: {
             $elemMatch: {
