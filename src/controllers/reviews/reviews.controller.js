@@ -1,15 +1,16 @@
 const mongoose = require('mongoose');
 const Review = require('../../models/reviews.model');
+const PointOfSale = require('../../models/pointOfSale.model');
 const User = require('../../models/user.model');
 const QRCode = require('qrcode');
 const reviewsController = {};
 
 
 
-reviewsController.createReview = async (req, res, next)=>{
+reviewsController.createReview = async (req, res, next) => {
 
-    try{
-        const {pointOfSaleId, userId, rating, comment, ownerReply} = req.body;
+    try {
+        const { pointOfSaleId, userId, rating, comment, ownerReply } = req.body;
 
         const review = new Review({
             pointOfSaleId,
@@ -19,30 +20,52 @@ reviewsController.createReview = async (req, res, next)=>{
             ownerReply
         })
 
+        const pos = await PointOfSale.findById(pointOfSaleId)
+            .select('stats.averageRating stats.totalReviews');
+
+        const prevAverage = pos.stats.averageRating;
+        const prevTotalReviews = pos.stats.totalReviews;
+
+        const updatedAverageRating =
+            (
+                (prevAverage * prevTotalReviews) + Number(rating)
+            ) / (prevTotalReviews + 1);
+
+
+        await PointOfSale.findByIdAndUpdate(pointOfSaleId, {
+
+            $inc: {
+                "stats.totalReviews": 1
+            },
+            $set: {
+                "stats.averageRating": Number(updatedAverageRating).toFixed(1)
+            }
+
+        });
+        await User.findByIdAndUpdate(userId, { $inc: { totalReviews: 1 } });
         await review.save();
-        res.status(201).json({message:"Review Created Successfully", review});
-const updatedTotalReviews = await User.findByIdAndUpdate(userId, {$inc: {totalReviews: 1}});
-await updatedTotalReviews.save();
 
-    }catch(err){
+        res.status(201).json({ message: "Review Created Successfully", review });
+
+    } catch (err) {
         next(err)
     }
 }
 
-reviewsController.getAllReviews = async (req, res, next) =>{
-    try{
-        const getReviews = await Review.find().populate(['pointOfSaleId' , 'userId']);
-        res.status(200).json({message:"All Reviews Fetched Successfully", getReviews});
-// we still need to make sure that the right owner is who s getting the reviews
-    }catch(err){
+reviewsController.getAllReviews = async (req, res, next) => {
+    try {
+        const getReviews = await Review.find().populate(['pointOfSaleId', 'userId']);
+        res.status(200).json({ message: "All Reviews Fetched Successfully", getReviews });
+        // we still need to make sure that the right owner is who s getting the reviews
+    } catch (err) {
         next(err)
     }
 }
 
-reviewsController.updateReviews = async (req, res, next) =>{
+reviewsController.updateReviews = async (req, res, next) => {
     console.log('updateReviews');
-    try{
-        const {id} = req.params;
+    try {
+        const { id } = req.params;
         const updateData = req.body;
         console.log('updateData', id, updateData);
         const updatedReview = await Review.findByIdAndUpdate(id, updateData);
@@ -53,19 +76,19 @@ reviewsController.updateReviews = async (req, res, next) =>{
 
         return res.status(200).json({ message: 'Review updated successfully', data: updatedReview });
 
-    }catch(err){
+    } catch (err) {
         next(err)
     }
 }
 
-reviewsController.getReviewsByPointOfSaleId = async (req, res, next) =>{
-    try{
-        const {id} = req.params;
+reviewsController.getReviewsByPointOfSaleId = async (req, res, next) => {
+    try {
+        const { id } = req.params;
         console.log('iddddd', id);
-        const reviews = await Review.find({pointOfSaleId: id}).populate(['pointOfSaleId' , 'userId']);
+        const reviews = await Review.find({ pointOfSaleId: id }).populate(['pointOfSaleId', 'userId']);
 
-        res.status(200).json({message:"Reviews Fetched Successfully", reviews});
-    }catch(err){
+        res.status(200).json({ message: "Reviews Fetched Successfully", reviews });
+    } catch (err) {
         next(err)
     }
 }

@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 
-const FileUpload = require('../../models/media.model'); 
-const cloudinary = require('../../config/cloudinary'); 
- const Post = require('../../models/post.model');
+const FileUpload = require('../../models/media.model');
+const cloudinary = require('../../config/cloudinary');
+const Post = require('../../models/post.model');
 const User = require('../../models/user.model');
 const PointOfSale = require('../../models/pointOfSale.model');
 const Notification = require('../../models/notif.model');
 // const { Readable } = require('stream');
-const postController={};
+const postController = {};
 
 
 console.log('post controller');
@@ -31,14 +31,14 @@ postController.scanQr = async (req, res, next) => {
     }
 
     // Return POS info so frontend / Postman knows where to upload
-   return res.status(200).json({
+    return res.status(200).json({
       message: 'POS found. You can upload a post now.',
       pos: pos._id,
       posName: pos.name
     });
 
   } catch (err) {
-   next(err);
+    next(err);
   }
 };
 
@@ -48,28 +48,28 @@ postController.createPost = async (req, res) => {
   console.log("CREATE POST HIT");
 
   try {
-   const { caption, owner, referralUser, pos } = req.body;
-   console.log('referralUser hhhhhhhhhhh', referralUser);
-   console.log('owner', owner);
+    const { caption, owner, referralUser, pos } = req.body;
+    console.log('referralUser hhhhhhhhhhh', referralUser);
+    console.log('owner', owner);
     console.log('create post', req.body);
 
-  const newReferralUser =
-  req?.body?.referralUser &&
-  req?.body?.referralUser !== "" &&
-  req?.body?.referralUser !== "null"
-    ? req?.body?.referralUser
-    : undefined;
-   
- 
+    const newReferralUser =
+      req?.body?.referralUser &&
+        req?.body?.referralUser !== "" &&
+        req?.body?.referralUser !== "null"
+        ? req?.body?.referralUser
+        : undefined;
+
+
     if (!owner || !pos) {
       return res.status(400).json({ message: "Missing owner or pos" });
     }
 
-    
-   if (!req.file) {
+
+    if (!req.file) {
       return res.status(400).json({ message: "No image uploaded" });
     }
-console.log('req.file', req.file);
+    console.log('req.file', req.file);
     // Upload file to Cloudinary
     const uploadResult = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
@@ -96,63 +96,59 @@ console.log('req.file', req.file);
       // referralLink,
     });
 
-     await newPost.save();
+    await newPost.save();
 
-     const updatedVisitedSpots = await PointOfSale.findByIdAndUpdate({_id: owner}, {
+    const updatedVisitedSpots = await PointOfSale.findByIdAndUpdate({ _id: owner }, {
       finalUser: {
         $push: {
           visits: pos
         }
       }
     });
-    if(newReferralUser && newReferralUser !== "" && newReferralUser !== "null" && newReferralUser !== owner){
-      // const newGain = await User.findByIdAndUpdate(newReferralUser, {
-      //   finalUser: {
-      //     pointsByPos: 
-      //   }
-      // })
-      // console.log('new gain', )
-      // console.log('newGain', newGain);
-    const newNotif = new Notification({
-      recipient: newReferralUser,
-      sender: owner, // not the owner of the post, the owner of the referral link that was sent.
-      message: 'You gained 50 points via referral link to ' 
-    });
-    // await newGain.save();
+
+    if (newReferralUser && newReferralUser !== "" && newReferralUser !== "null" && newReferralUser !== owner) {
+
+      const newNotif = new Notification({
+        recipient: newReferralUser,
+        sender: owner, // not the owner of the post, the owner of the referral link that was sent.
+        message: 'You gained 50 points via referral link to '
+      });
+      // await newGain.save();
       await newNotif.save();
       console.log('newNotif', newNotif);
 
-  }
+    }
 
 
     // Add post to User
-const updatedUser = await User.findById(owner);
+    const updatedUser = await User.findById(owner);
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
-    else{
-     const updatedUser = await User.updateOne({_id: owner}, {
-      $push: { "finalUser.posts": newPost._id },
-      $addToSet: { "finalUser.visits": pos }
-       });
+    else {
+      const updatedUser = await User.updateOne({ _id: owner }, {
+        $push: { "finalUser.posts": newPost._id },
+        $addToSet: { "finalUser.visits": pos }
+      });
       console.log('updatedUser', updatedUser);
     }
 
     // Add post to POS
     await PointOfSale.findByIdAndUpdate(pos, {
       $push: { posts: newPost._id },
-       });
+      $inc: { "stats.totalVisits": 1 }
+    });
 
     return res.json({
       message: "Post created successfully",
       post: newPost,
     });
   } catch (err) {
-   
-   return res.status(500).json({
-      success:false,
+
+    return res.status(500).json({
+      success: false,
       message: err.message
-   });
+    });
   }
 };
 
@@ -168,7 +164,7 @@ postController.getPostById = async (req, res, next) => {
     next(error);
   }
 };
- 
+
 postController.getPostByOwnerId = async (req, res, next) => {
   try {
     const { ownerId } = req.params;
@@ -181,7 +177,7 @@ postController.getPostByOwnerId = async (req, res, next) => {
     next(error);
   }
 };
- postController.getAllPosts= async (req, res, next) => {
+postController.getAllPosts = async (req, res, next) => {
   try {
     const posts = await Post.find().populate(['owner', 'pos', 'comments.userId']).sort({ createdAt: -1 });
     if (!posts) {
@@ -210,8 +206,8 @@ postController.likes = async (req, res, next) => {
     // 2. Select MongoDB array modifier depending on the incoming integer
     // If 1: use $addToSet to add the userId uniquely (ignores duplicates)
     // If -1: use $pull to strip the userId completely from the array
-    const updateOperator = newLikes === 1 
-      ? { $addToSet: { likes: userId } } 
+    const updateOperator = newLikes === 1
+      ? { $addToSet: { likes: userId } }
       : { $pull: { likes: userId } };
 
     // 3. Atomically update the document and return the freshly modified array
@@ -226,10 +222,10 @@ postController.likes = async (req, res, next) => {
     }
 
     // 4. Guaranteed Terminal Response: Dynamically calculate count via .length
-    return res.status(200).json({ 
-      message: newLikes === 1 ? "Like added successfully" : "Like removed successfully", 
+    return res.status(200).json({
+      message: newLikes === 1 ? "Like added successfully" : "Like removed successfully",
       likesCount: updatedPost.likes.length, // Extracted directly from array footprint
-      likes: updatedPost.likes 
+      likes: updatedPost.likes
     });
 
   } catch (error) {
@@ -250,16 +246,18 @@ postController.comments = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid payload: comment must be a non-empty string" });
     }
 
-   
-    const updateOperator = comment !== "" 
-      && { $addToSet:
-         {comments: {
+
+    const updateOperator = comment !== ""
+      && {
+        $addToSet:
+        {
+          comments: {
             userId: userId,
             comment: comment
           }
         }
-      };
-        
+    };
+
 
     const updatedPost = await Post.findByIdAndUpdate(
       id,
@@ -272,10 +270,10 @@ postController.comments = async (req, res, next) => {
     }
 
     // 4. Guaranteed Terminal Response: Dynamically calculate count via .length
-    return res.status(200).json({ 
-      message: comment !== "" && "Comment added successfully" ,
+    return res.status(200).json({
+      message: comment !== "" && "Comment added successfully",
       commentsCount: updatedPost.comments.length, // Extracted directly from array footprint
-       
+
     });
 
   } catch (error) {
