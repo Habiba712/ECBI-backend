@@ -34,6 +34,7 @@ authController.login = async(req, res, next) =>{
        const pointOfSaleName = getOwner?.ownerInfo?.ownedPos ? getOwner?.ownerInfo?.ownedPos[0]?.name: null;
     const businessName = getOwner?.ownerInfo?.businessName ? getOwner?.ownerInfo?.businessName: null;
     const role = user.base.role;
+    
 
     const validatePassword = await bcrypt.compare(password, user.base.password);
 
