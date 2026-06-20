@@ -115,21 +115,26 @@ postController.createPost = async (req, res) => {
       });
       // await newGain.save();
       await newNotif.save();
-      const updateVisitHistory = await User.findByIdAndUpdate({ _id: owner }, {
-        $push: {
-          visitHistory: {
-            pointOfSaleId: pos._id,
-            pointOfSaleName: pos.name,
-            date: new Date(),
-            pointsEarned: 50
-          }
-        }
-      });
-      console.log('updateVisitHistory', updateVisitHistory);
+
+     
       console.log('newNotif', newNotif);
 
     }
-
+ const getBusinessName = await PointOfSale.findById(pos).populate('ownerId');
+      console.log('getBusinessName', getBusinessName?.ownerId?.ownerInfo?.businessName);
+      const updateVisitHistory = await User.findByIdAndUpdate({ _id: owner }, {
+       $push : {
+       "finalUser.visitHistory": 
+       {
+            pointOfSaleId: pos,
+            businessName: getBusinessName?.ownerId?.ownerInfo?.businessName,
+            date: new Date(),
+            pointsEarned: 50
+          
+        }
+      }
+      });
+      console.log('updateVisitHistory', updateVisitHistory);
 
     // Add post to User
     const updatedUser = await User.findById(owner);

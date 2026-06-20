@@ -137,7 +137,7 @@ pointsByPos: [
     },
     visitHistory: [{
         pointOfSaleId: mongoose.Schema.Types.ObjectId,
-        pointOfSaleName: String,
+        businessName: String,
         date: Date,
         pointsEarned: Number
     }],
