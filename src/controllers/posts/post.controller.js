@@ -62,6 +62,9 @@ postController.createPost = async (req, res) => {
     const ownerId = new mongoose.Types.ObjectId(owner);
     const posId = new mongoose.Types.ObjectId(pos);
 
+    console.log("POS ID", posId);
+    console.log("OWNER ID", ownerId);
+
     // 1. Fetch user + POS
     const userDoc = await User.findById(ownerId);
     if (!userDoc) {
@@ -114,7 +117,9 @@ postController.createPost = async (req, res) => {
 
     const visitHistory = userDoc.finalUser.visitHistory || [];
 
-    const existing = visitHistory.find(v =>
+   
+    const existing = visitHistory.length > 0 && visitHistory.find(v =>
+      v.pointOfSaleId && 
       v.pointOfSaleId.toString() === posId.toString()
     );
 
