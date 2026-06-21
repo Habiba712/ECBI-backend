@@ -140,7 +140,10 @@ pointsByPos: [
         businessName: String,
         date: Date,
         pointsEarned: Number,
-        count: Number
+        count: {
+            type: Number,
+            default: 1
+        }
     }],
      preferences: {
         favoriteCuisines: {
