@@ -91,6 +91,7 @@ postController.createPost = async (req, res) => {
       caption,
       // referralLink,
     });
+    console.log('newPost', newPost);
 
     await newPost.save();
 
@@ -109,6 +110,7 @@ postController.createPost = async (req, res) => {
 
     // Add post to User
     const updatedUser = await User.findById(owner);
+    console.log('updatedUser', updatedUser);
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -143,6 +145,7 @@ postController.createPost = async (req, res) => {
     await user.save();
     }
     const updatedVisitedSpots = user.finalUser.visits.push(posId);
+    console.log('updatedVisitedSpots', updatedVisitedSpots);
     await user.save();
 
     // Add post to POS
@@ -150,7 +153,7 @@ postController.createPost = async (req, res) => {
       $push: { posts: newPost._id },
       $inc: { "stats.totalVisits": 1 }
     });
-
+    console.log('pos', pos);
     return res.json({
       message: "Post created successfully",
 
