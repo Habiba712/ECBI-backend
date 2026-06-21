@@ -49,123 +49,126 @@ postController.createPost = async (req, res) => {
 
   try {
     const { caption, owner, referralUser, pos } = req.body;
-    const newReferralUser =
-      req?.body?.referralUser &&
-        req?.body?.referralUser !== "" &&
-        req?.body?.referralUser !== "null"
-        ? req?.body?.referralUser
-        : undefined;
-
-    const owner_Id = new mongoose.Types.ObjectId(owner);
-
-    const user = await User.findById(owner_Id);
-    const posId = new mongoose.Types.ObjectId(pos);
-
-   
 
     if (!owner || !pos) {
       return res.status(400).json({ message: "Missing owner or pos" });
     }
 
+    const newReferralUser =
+      referralUser && referralUser !== "" && referralUser !== "null"
+        ? referralUser
+        : undefined;
 
+    const ownerId = new mongoose.Types.ObjectId(owner);
+    const posId = new mongoose.Types.ObjectId(pos);
+
+    // 1. Fetch user + POS
+    const userDoc = await User.findById(ownerId);
+    if (!userDoc) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const posDoc = await PointOfSale.findById(posId).populate("ownerId");
+
+    const businessName =
+      posDoc?.ownerId?.ownerInfo?.businessName || "Unknown";
+
+    // 2. Upload image
     if (!req.file) {
       return res.status(400).json({ message: "No image uploaded" });
     }
 
     const uploadResult = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
+      const stream = cloudinary.uploader.upload_stream(
         { folder: "posts" },
-        (error, result) => {
-          if (error) return reject(error);
+        (err, result) => {
+          if (err) return reject(err);
           resolve(result);
         }
       );
-      uploadStream.end(req.file.buffer);
+      stream.end(req.file.buffer);
     });
 
-    const newPost = new Post({
-      owner: owner,
+    // 3. Create post
+    const newPost = await Post.create({
+      owner,
       referralUser: newReferralUser,
-      pos: pos,
+      pos: posId,
       photoUrl: uploadResult.secure_url,
       caption,
-      // referralLink,
     });
-    console.log('newPost', newPost);
 
-    await newPost.save();
-
-    
-
-    if (newReferralUser && newReferralUser !== "" && newReferralUser !== "null" && newReferralUser !== owner) {
-
-      const newNotif = new Notification({
+    // 4. Notification (safe)
+    if (
+      newReferralUser &&
+      newReferralUser !== owner
+    ) {
+      await Notification.create({
         recipient: newReferralUser,
-        sender: owner, // not the owner of the post, the owner of the referral link that was sent.
-        message: 'You gained 50 points via referral link to '
+        sender: owner,
+        message: "You gained 50 points via referral link to ",
       });
-      await newNotif.save();
     }
 
+    // 5. VISIT HISTORY (FIXED LOGIC — NO save(), NO updateOne MIXING)
 
-    // Add post to User
-    const updatedUser = await User.findById(owner);
-    console.log('updatedUser', updatedUser);
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    else {
-      const updatedUser = await User.updateOne({ _id: owner }, {
-        $push: { "finalUser.posts": newPost._id },
-        $addToSet: { "finalUser.visits": pos },
+    const visitHistory = userDoc.finalUser.visitHistory || [];
 
-      });
-      console.log('updatedUser', updatedUser);
-
-       const getBusinessName = await PointOfSale.findById(posId).populate('ownerId');
-
-    const existing = user.finalUser.visitHistory.find(v =>
+    const existing = visitHistory.find(v =>
       v.pointOfSaleId.toString() === posId.toString()
     );
 
     if (!existing) {
-      user.finalUser.visitHistory.push({
+      visitHistory.push({
         pointOfSaleId: posId,
-        businessName: getBusinessName?.ownerId?.ownerInfo?.businessName,
+        businessName,
         date: new Date(),
         pointsEarned: 50,
-        count: 1
+        count: 1,
       });
     } else {
       existing.count += 1;
       existing.date = new Date();
     }
 
-    // ONLY ONE SAVE (important)
-    await user.save();
-    }
-    const updatedVisitedSpots = user.finalUser.visits.push(posId);
-    console.log('updatedVisitedSpots', updatedVisitedSpots);
-    await user.save();
+    // 6. VISITS ARRAY (safe dedupe)
+    const visits = new Set(
+      (userDoc.finalUser.visits || []).map(v => v.toString())
+    );
+    visits.add(posId.toString());
 
-    // Add post to POS
-    await PointOfSale.findByIdAndUpdate(pos, {
+    // 7. SINGLE ATOMIC UPDATE (IMPORTANT)
+    await User.updateOne(
+      { _id: ownerId },
+      {
+        $set: {
+          "finalUser.visitHistory": visitHistory,
+          "finalUser.visits": Array.from(visits).map(
+            id => new mongoose.Types.ObjectId(id)
+          ),
+        },
+        $push: {
+          "finalUser.posts": newPost._id,
+        },
+      }
+    );
+
+    // 8. Update POS
+    await PointOfSale.findByIdAndUpdate(posId, {
       $push: { posts: newPost._id },
-      $inc: { "stats.totalVisits": 1 }
+      $inc: { "stats.totalVisits": 1 },
     });
-    console.log('pos', pos);
+
+    // 9. RESPONSE
     return res.json({
       message: "Post created successfully",
-
-
-      post: newPost
-
+      post: newPost,
     });
   } catch (err) {
-
+    console.error("CREATE POST ERROR:", err);
     return res.status(500).json({
       success: false,
-      message: err.message
+      message: err.message,
     });
   }
 };
