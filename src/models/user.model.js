@@ -139,7 +139,8 @@ pointsByPos: [
         pointOfSaleId: mongoose.Schema.Types.ObjectId,
         businessName: String,
         date: Date,
-        pointsEarned: Number
+        pointsEarned: Number,
+        count: Number
     }],
      preferences: {
         favoriteCuisines: {

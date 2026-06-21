@@ -49,10 +49,6 @@ postController.createPost = async (req, res) => {
 
   try {
     const { caption, owner, referralUser, pos } = req.body;
-    console.log('referralUser hhhhhhhhhhh', referralUser);
-    console.log('owner', owner);
-    console.log('create post', req.body);
-
     const newReferralUser =
       req?.body?.referralUser &&
         req?.body?.referralUser !== "" &&
@@ -60,6 +56,32 @@ postController.createPost = async (req, res) => {
         ? req?.body?.referralUser
         : undefined;
 
+    const owner_Id = new mongoose.Types.ObjectId(owner);
+
+    const user = await User.findById(owner_Id);
+    const posId = new mongoose.Types.ObjectId(pos);
+
+    const getBusinessName = await PointOfSale.findById(posId).populate('ownerId');
+
+    const existing = user.finalUser.visitHistory.find(v =>
+      v.pointOfSaleId.toString() === posId.toString()
+    );
+
+    if (!existing) {
+      user.finalUser.visitHistory.push({
+        pointOfSaleId: posId,
+        businessName: getBusinessName?.ownerId?.ownerInfo?.businessName,
+        date: new Date(),
+        pointsEarned: 50,
+        count: 1
+      });
+    } else {
+      existing.count += 1;
+      existing.date = new Date();
+    }
+
+    // ONLY ONE SAVE (important)
+    await user.save();
 
     if (!owner || !pos) {
       return res.status(400).json({ message: "Missing owner or pos" });
@@ -69,8 +91,7 @@ postController.createPost = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: "No image uploaded" });
     }
-    console.log('req.file', req.file);
-    // Upload file to Cloudinary
+
     const uploadResult = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         { folder: "posts" },
@@ -82,11 +103,6 @@ postController.createPost = async (req, res) => {
       uploadStream.end(req.file.buffer);
     });
 
-    // Generate unique referral link for this post
-    // const referralCode = generateReferralCode();
-    // const referralLink = `${process.env.FRONTEND_URL}/ref/${referralCode}`;
-
-    // Create post
     const newPost = new Post({
       owner: owner,
       referralUser: newReferralUser,
@@ -98,13 +114,8 @@ postController.createPost = async (req, res) => {
 
     await newPost.save();
 
-    const updatedVisitedSpots = await User.findByIdAndUpdate({ _id: owner }, {
-      finalUser: {
-        $push: {
-          visits: pos
-        }
-      }
-    });
+    const updatedVisitedSpots = user.finalUser.visits.push(posId);
+    await user.save();
 
     if (newReferralUser && newReferralUser !== "" && newReferralUser !== "null" && newReferralUser !== owner) {
 
@@ -113,28 +124,9 @@ postController.createPost = async (req, res) => {
         sender: owner, // not the owner of the post, the owner of the referral link that was sent.
         message: 'You gained 50 points via referral link to '
       });
-      // await newGain.save();
       await newNotif.save();
-
-     
-      console.log('newNotif', newNotif);
-
     }
- const getBusinessName = await PointOfSale.findById(pos).populate('ownerId');
-      console.log('getBusinessName', getBusinessName?.ownerId?.ownerInfo?.businessName);
-      const updateVisitHistory = await User.findByIdAndUpdate({ _id: owner }, {
-       $push : {
-       "finalUser.visitHistory": 
-       {
-            pointOfSaleId: pos,
-            businessName: getBusinessName?.ownerId?.ownerInfo?.businessName,
-            date: new Date(),
-            pointsEarned: 50
-          
-        }
-      }
-      });
-      console.log('updateVisitHistory', updateVisitHistory);
+
 
     // Add post to User
     const updatedUser = await User.findById(owner);
@@ -144,7 +136,8 @@ postController.createPost = async (req, res) => {
     else {
       const updatedUser = await User.updateOne({ _id: owner }, {
         $push: { "finalUser.posts": newPost._id },
-        $addToSet: { "finalUser.visits": pos }
+        $addToSet: { "finalUser.visits": pos },
+
       });
       console.log('updatedUser', updatedUser);
     }
@@ -157,7 +150,10 @@ postController.createPost = async (req, res) => {
 
     return res.json({
       message: "Post created successfully",
-      post: newPost,
+
+
+      post: newPost
+
     });
   } catch (err) {
 
@@ -265,13 +261,13 @@ postController.comments = async (req, res, next) => {
 
     const updateOperator = comment !== ""
       && {
-        $addToSet:
-        {
-          comments: {
-            userId: userId,
-            comment: comment
-          }
+      $addToSet:
+      {
+        comments: {
+          userId: userId,
+          comment: comment
         }
+      }
     };
 
 
