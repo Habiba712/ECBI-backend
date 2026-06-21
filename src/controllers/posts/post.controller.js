@@ -61,27 +61,7 @@ postController.createPost = async (req, res) => {
     const user = await User.findById(owner_Id);
     const posId = new mongoose.Types.ObjectId(pos);
 
-    const getBusinessName = await PointOfSale.findById(posId).populate('ownerId');
-
-    const existing = user.finalUser.visitHistory.find(v =>
-      v.pointOfSaleId.toString() === posId.toString()
-    );
-
-    if (!existing) {
-      user.finalUser.visitHistory.push({
-        pointOfSaleId: posId,
-        businessName: getBusinessName?.ownerId?.ownerInfo?.businessName,
-        date: new Date(),
-        pointsEarned: 50,
-        count: 1
-      });
-    } else {
-      existing.count += 1;
-      existing.date = new Date();
-    }
-
-    // ONLY ONE SAVE (important)
-    await user.save();
+   
 
     if (!owner || !pos) {
       return res.status(400).json({ message: "Missing owner or pos" });
@@ -114,8 +94,7 @@ postController.createPost = async (req, res) => {
 
     await newPost.save();
 
-    const updatedVisitedSpots = user.finalUser.visits.push(posId);
-    await user.save();
+    
 
     if (newReferralUser && newReferralUser !== "" && newReferralUser !== "null" && newReferralUser !== owner) {
 
@@ -140,7 +119,31 @@ postController.createPost = async (req, res) => {
 
       });
       console.log('updatedUser', updatedUser);
+
+       const getBusinessName = await PointOfSale.findById(posId).populate('ownerId');
+
+    const existing = user.finalUser.visitHistory.find(v =>
+      v.pointOfSaleId.toString() === posId.toString()
+    );
+
+    if (!existing) {
+      user.finalUser.visitHistory.push({
+        pointOfSaleId: posId,
+        businessName: getBusinessName?.ownerId?.ownerInfo?.businessName,
+        date: new Date(),
+        pointsEarned: 50,
+        count: 1
+      });
+    } else {
+      existing.count += 1;
+      existing.date = new Date();
     }
+
+    // ONLY ONE SAVE (important)
+    await user.save();
+    }
+    const updatedVisitedSpots = user.finalUser.visits.push(posId);
+    await user.save();
 
     // Add post to POS
     await PointOfSale.findByIdAndUpdate(pos, {
