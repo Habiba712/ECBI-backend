@@ -101,7 +101,7 @@ authController.login = async(req, res, next) =>{
 authController.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ "base.email": email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const token = jwt.sign(
