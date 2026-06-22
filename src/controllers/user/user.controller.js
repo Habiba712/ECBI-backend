@@ -328,7 +328,7 @@ userController.updateProfileUser = async (req, res, next) => {
 
 userController.settingsUpdateById = async (req, res, next) => {
     const settingsSchema = z.object({
-        username: z.string().min(2).max(50, "Name must be at least 2 characters").optional(),
+        name: z.string().min(2).max(50, "Name must be at least 2 characters").optional(),
         businessName: z.string().min(2).max(50, "Name must be at least 10 characters").optional(),
         email: z.string().email("Invalid email address").optional(),
         telephone: z.string().regex(/^\+?\d{7,15}$/, "Invalid phone number").optional().or(z.literal("")),
@@ -375,7 +375,21 @@ userController.settingsUpdateById = async (req, res, next) => {
 
         // console.log('hashed pass', validateData.password)
         // console.log('id', id, 'validateData', validateData)
-        const updateUserData = await User.findByIdAndUpdate(id, validateData);
+        const updateUserData = await User.findByIdAndUpdate(id, 
+            {
+                "base.name": validateData.name,
+                "base.email": validateData.email,
+                "base.telephone": validateData.telephone,
+                "base.avatar": validateData.avatar,
+                "base.password": validateData.password,
+                "ownerInfo.businessName": validateData.businessName,
+                "ownerInfo.settings.reviews_notifications": validateData.settings.reviews_notifications,
+                "ownerInfo.settings.visits_notifications": validateData.settings.visits_notifications,
+                "ownerInfo.settings.weekly_report": validateData.settings.weekly_report,
+                
+            }
+
+        );
 
 
         return res.status(200).json({ message: 'User updated successfully', data: updateUserData });
