@@ -20,23 +20,25 @@ authController.login = async(req, res, next) =>{
     const user = await User?.findOne({ 
      $or:[
       {"base.email": email},
-      {"ownerInfo.email":{email}}
+      {"ownerInfo.email":email}
      ]
     })
-    console.log('user',user)
+    // console.log('user',user)
  if(!user){
       return res.status(401).json({message: 'User Not Found'})
     }
     if(user && user.base.role === 'RESTO_SUPER_ADMIN'){
-      console.log('role',user.base.role)
+      console.log('role',user.base.role);
       const getOwner = await User.findOne({_id: user._id}).populate('ownerInfo.ownedPos');
-      console.log('getOwner',getOwner)
+      // console.log('getOwner',getOwner)
        const pointOfSaleName = getOwner?.ownerInfo?.ownedPos ? getOwner?.ownerInfo?.ownedPos[0]?.name: null;
     const businessName = getOwner?.ownerInfo?.businessName ? getOwner?.ownerInfo?.businessName: null;
     const role = user.base.role;
+    console.log('role e',role)
+    console.log('passs',user.base.password)
     
 
-    const validatePassword = await bcrypt.compare(password, user.base.password);
+    const validatePassword = await bcrypt.compare(password, user?.base?.password);
 
 
     if(!validatePassword){
