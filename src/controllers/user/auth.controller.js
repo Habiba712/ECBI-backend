@@ -15,11 +15,7 @@ authController.login = async(req, res, next) =>{
   try{
     const {email, password}= req.body;
     // ⚠️ TEMPORARY MASTER RESET (Delete this after it works once!)
-if (email === "davidmiller@gmail.com") {
-    const freshHash = await bcrypt.hash("12345", 10);
-    await User.updateOne({ "base.email": email }, { $set: { "base.password": freshHash } });
-    console.log("🔥 ABSOLUTE CLEAN RESET SUCCESSFUL FOR PASSWORD '12345'. HASH IS:", freshHash);
-}
+
     console.log('email',email)
     console.log('password',password)
 
