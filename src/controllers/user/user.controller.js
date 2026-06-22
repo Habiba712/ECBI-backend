@@ -327,14 +327,14 @@ userController.updateProfileUser = async (req, res, next) => {
 }
 
 userController.settingsUpdateById = async (req, res, next) => {
-    // 1. Updated Zod schema key name to match frontend payload ('preferences')
+    // 1. Zod Schema allowing loose inputs and treating everything as structurally optional
     const settingsSchema = z.object({
-        name: z.string().min(2).max(50, "Name must be at least 2 characters").optional(),
-        businessName: z.string().min(2).max(50, "Name must be at least 2 characters").optional(), // Fixed message length typo
-        email: z.string().email("Invalid email address").optional(),
+        name: z.string().min(2).max(50).optional().or(z.literal("")),
+        businessName: z.string().min(2).max(50).optional().or(z.literal("")),
+        email: z.string().email("Invalid email address").optional().or(z.literal("")),
         telephone: z.string().regex(/^\+?\d{7,15}$/, "Invalid phone number").optional().or(z.literal("")),
-        oldPassword: z.string().min(4, "Old password must be at least 6 chars").optional().or(z.literal("")),
-        password: z.string().min(4, "New password must be at least 6 chars").optional().or(z.literal("")),
+        oldPassword: z.string().optional().or(z.literal("")),
+        password: z.string().optional().or(z.literal("")),
         preferences: z.object({
             reviews_notifications: z.boolean().optional(),
             visits_notifications: z.boolean().optional(),
@@ -343,38 +343,54 @@ userController.settingsUpdateById = async (req, res, next) => {
     });
 
     try {
+        // Safe parameter safety guard to protect against undefined request bodies
+        if (!req.body || !req.body.data) {
+            return res.status(400).json({ message: "Request payload body wrapper 'data' is missing or undefined." });
+        }
+
         const validateData = settingsSchema.parse(req.body.data);
         const { id } = req.params;
 
-        // Verify password change prerequisites
-        if (!validateData.oldPassword && validateData.password) {
-            return res.status(400).json({ message: "Please enter your old password" });
-        }
-        else if (validateData.oldPassword && validateData.password) {
+        // Clean up empty form properties so they don't overwrite database paths with blank values
+        Object.keys(validateData).forEach(key => {
+            if (validateData[key] === "" || validateData[key] === undefined || validateData[key] === null) {
+                delete validateData[key];
+            }
+        });
+
+        const updateFields = {};
+
+        // 2. Comprehensive Password Validation Loop
+        if (validateData.password) {
+            if (!validateData.oldPassword) {
+                return res.status(400).json({ message: "Please enter your old password" });
+            }
+
             const user = await User.findById(id);
             if (!user) return res.status(404).json({ message: "User not found" });
 
-            // FIX: Pointing to base.password instead of flat model root
-            const oldHashedPassword = user.base?.password; 
-            
+            // FIXED: Extracted nested token from base sub-property 
+            const oldHashedPassword = user.base?.password;
+            if (!oldHashedPassword) {
+                return res.status(500).json({ message: "Cryptographic hash field missing from target database record." });
+            }
+
             const compareOldPassword = await bcrypt.compare(validateData.oldPassword, oldHashedPassword);
             if (!compareOldPassword) {
                 return res.status(400).json({ message: "Old Password is incorrect" });
             }
 
-            validateData.password = await bcrypt.hash(validateData.password, 10);
-            delete validateData.oldPassword;
+            // Secure new cipher token generation
+            updateFields["base.password"] = await bcrypt.hash(validateData.password, 10);
         }
 
-        // Dynamically compile the update object to protect against undefined sub-properties
-        const updateFields = {};
-        if (validateData.name !== undefined) updateFields["base.name"] = validateData.name;
-        if (validateData.email !== undefined) updateFields["base.email"] = validateData.email;
-        if (validateData.telephone !== undefined) updateFields["base.telephone"] = validateData.telephone;
-        if (validateData.password !== undefined) updateFields["base.password"] = validateData.password;
-        if (validateData.businessName !== undefined) updateFields["ownerInfo.businessName"] = validateData.businessName;
-        
-        // Safe mapping verification for preferences block
+        // 3. Dynamic payload assembly loops
+        if (validateData.name) updateFields["base.name"] = validateData.name;
+        if (validateData.email) updateFields["base.email"] = validateData.email;
+        if (validateData.telephone) updateFields["base.telephone"] = validateData.telephone;
+        if (validateData.businessName) updateFields["ownerInfo.businessName"] = validateData.businessName;
+
+        // Map notification toggle adjustments safely
         if (validateData.preferences) {
             if (validateData.preferences.reviews_notifications !== undefined) {
                 updateFields["ownerInfo.settings.reviews_notifications"] = validateData.preferences.reviews_notifications;
@@ -387,15 +403,23 @@ userController.settingsUpdateById = async (req, res, next) => {
             }
         }
 
+        // Verify that we actually have fields to update before executing database transaction
+        if (Object.keys(updateFields).length === 0) {
+            return res.status(400).json({ message: "No operational attribute updates were specified." });
+        }
+
         const updateUserData = await User.findByIdAndUpdate(
-            id, 
-            { $set: updateFields }, 
-            { new: true }
+            id,
+            { $set: updateFields },
+            { new: true, runValidators: true }
         );
 
         return res.status(200).json({ message: 'User updated successfully', data: updateUserData });
 
     } catch (err) {
+        if (err instanceof z.ZodError) {
+            return res.status(400).json({ message: "Validation Error", errors: err.errors });
+        }
         next(err);
     }
 };
