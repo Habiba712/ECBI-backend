@@ -11,7 +11,10 @@ reviewsController.createReview = async (req, res, next) => {
 
     try {
         const { pointOfSaleId, userId, rating, comment, ownerReply } = req.body;
-
+        console.log('pointOfSaleId', pointOfSaleId);
+        console.log('userId', userId);
+        console.log('rating', rating);
+        console.log('comment', comment);
         const review = new Review({
             pointOfSaleId,
             userId,

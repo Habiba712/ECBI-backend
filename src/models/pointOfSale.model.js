@@ -113,7 +113,9 @@ const pointOfSaleSchema = new mongoose.Schema({
   
   // === OPERATING HOURS ===
   hours: {
-    monday: { open: String, close: String, closed: Boolean },
+    monday: { open: String, close: String, closed: Boolean,
+      
+     },
     tuesday: { open: String, close: String, closed: Boolean },
     wednesday: { open: String, close: String, closed: Boolean },
     thursday: { open: String, close: String, closed: Boolean },
