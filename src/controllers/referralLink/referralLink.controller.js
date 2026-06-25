@@ -146,6 +146,7 @@ referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
 referralLinkController.updateReferralLink = async (req, res, next) => {
     const { linkId } = req.params;
     const { isExpired, visitorId, isActive, rewardedLinkOwner } = req.body;
+    console.log('updateReferralLink IDK WHY THIS IS NOT WORKING', linkId, isExpired, visitorId, isActive, rewardedLinkOwner)
 
     try {
         let referralLink = await ReferralLink.findOne({ linkId });
