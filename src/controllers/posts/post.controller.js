@@ -75,7 +75,7 @@ postController.createPost = async (req, res) => {
     if (newReferralUser && newReferralUser !== owner) {
       // Check if this friend (owner) has already been rewarded under this link-owner's links
       const alreadyRewarded = await ReferralLink.findOne({
-        owner: newReferralUser,
+        referrerUser: newReferralUser,
         "referredUsers.user": ownerId,
         "referredUsers.rewarded": true
       });
@@ -124,8 +124,10 @@ postController.createPost = async (req, res) => {
       
       // Update the referral tracking log to show this user's conversion points have been settled
       await ReferralLink.updateOne(
-        { owner: newReferralUser, "referredUsers.user": ownerId },
-        { $set: { "referredUsers.$.rewarded": true } }
+        { referrerUser: newReferralUser, "referredUsers.user": ownerId },
+        { $set: { "referredUsers.$.rewarded": true,
+          "referredUsers.$.pointsAwarded": 50
+         } }
       );
     }
 
