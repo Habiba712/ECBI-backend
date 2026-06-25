@@ -84,7 +84,7 @@ postController.createPost = async (req, res) => {
         }
       });
 
-      console.log('alreadyRewarded', alreadyRewarded.referredUsers);
+      console.log('alreadyRewarded', alreadyRewarded);
 
       // If they haven't been rewarded yet, flip the switch to allow point updates later
       if (!alreadyRewarded) {
