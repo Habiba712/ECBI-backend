@@ -145,6 +145,7 @@ referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
 
 referralLinkController.updateReferraLink = async (req, res, next) =>{
       const { linkId } = req.params;
+      console.log('linkId', linkId);
 
   const {isExpired, visitorId, isActive, rewardedLinkOwner} = req.body;
   // console.log('dataaa', isExpired, visitorId);
@@ -162,7 +163,14 @@ console.log('visitorIndex', visitorIndex);
     if (visitorIndex === -1) {
       await ReferralLink.findOneAndUpdate(
         {linkId},
-        {$push : {referredUsers : {user: visitorId, isActive: true, visited: false, rewarded: false, blocked: false, pointsAwarded: 0}}}
+        {$push : 
+          {referredUsers : 
+            {user: visitorId, 
+            isActive: true, 
+            visited: false, 
+            rewarded: false, 
+            blocked: false, 
+            pointsAwarded: 0}}}
       );
          }
         
