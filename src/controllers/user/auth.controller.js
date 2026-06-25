@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../../models/user.model');
  const { sendEmail } = require('../../utils/sendMail');
 const Blacklist = require('../../models/Blacklist');
+const Notification = require('../../models/notif.model');
 
 require('../../models/pointOfSale.model'); // Add this line to import the PointDeVente model
 
@@ -14,7 +15,6 @@ authController.login = async(req, res, next) =>{
   
   try{
     const {email, password}= req.body;
-    // ⚠️ TEMPORARY MASTER RESET (Delete this after it works once!)
 
     console.log('email',email)
     console.log('password',password)
@@ -47,9 +47,6 @@ authController.login = async(req, res, next) =>{
       return res.status(401).json({message: 'Invalid Credentials'})
     }
 
-
-  
-
      const token = jwt.sign({
         email: user.email, 
         username: user.username,
@@ -73,7 +70,45 @@ authController.login = async(req, res, next) =>{
       return res.status(401).json({message: 'Invalid Credentials'})
     }
 
+ const now = new Date();
+    let loginBonusGranted = false;
+    let pointsEanredThisSession = 0;  
 
+    if(user?.base?.lastLogin){
+     const lastLogin = new Date(user.base.lastLogin);
+     const isNewDay = now.getFullYear() > lastLogin.getFullYear() || 
+                      now.getMonth() > lastLogin.getMonth() ||
+                      now.getDate() > lastLogin.getDate();
+    
+    if (isNewDay) {
+      loginBonusGranted = true;
+      pointsEanredThisSession = 5;
+    }
+    else{
+      loginBonusGranted = true;
+      pointsEanredThisSession = 5;
+    }
+    }
+
+    const updateLastLogin = {
+      $set : {"base.lastLogin" : now}
+    }
+    if(loginBonusGranted){
+      updateLastLogin.$push = {
+        "finalUser.pointsPlatform": {
+          action: "login",
+          earnedPoints: pointsEanredThisSession,
+          redeemedPoints: 0
+        }
+      }
+    
+    }
+    await Notification.create({
+            recipient: user._id,
+            sender: user._id,
+            message: "You earned 5 points for logging in today",
+          });
+    await User.findByIdAndUpdate({_id: user._id}, updateLastLogin);
   
 
  const token = jwt.sign({

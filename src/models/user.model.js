@@ -104,7 +104,18 @@ pointsByPos: [
             required: false
         }
     }],
-
+pointsPlatrform:[{
+        action: String,
+        earnedPoints: {
+            type: Number,
+            default: 0
+        },
+        redeemedPoints: {
+            type: Number,
+            default: 0,
+            required: false
+        }
+    }],
 
     posts:[{
         type: mongoose.Schema.Types.ObjectId,
