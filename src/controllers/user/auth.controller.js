@@ -25,6 +25,7 @@ authController.login = async(req, res, next) =>{
       {"ownerInfo.email":email}
      ]
     })
+    const role = user?.base?.role;
     // console.log('user',user)
  if(!user){
       return res.status(401).json({message: 'User Not Found'})
@@ -61,7 +62,7 @@ authController.login = async(req, res, next) =>{
  return res.json({message:'Login Succesful', token, role, pointOfSaleName, businessName, userId: user._id});
      }
      else{
-          const role = user.base.role;
+          const role = user?.base?.role || "FINAL_USER";
 
               const validatePassword = await bcrypt.compare(password, user.base.password);
 
@@ -71,46 +72,55 @@ authController.login = async(req, res, next) =>{
     }
 
  const now = new Date();
-    let loginBonusGranted = false;
-    let pointsEanredThisSession = 0;  
+let loginBonusGranted = false;
+let pointsEanredThisSession = 0;  
 
-    if(user?.base?.lastLogin){
-     const lastLogin = new Date(user.base.lastLogin);
-     const isNewDay = now.getFullYear() > lastLogin.getFullYear() || 
-                      now.getMonth() > lastLogin.getMonth() ||
-                      now.getDate() > lastLogin.getDate();
-    
-    if (isNewDay) {
-      loginBonusGranted = true;
-      pointsEanredThisSession = 5;
-    }
-    else{
-      loginBonusGranted = true;
-      pointsEanredThisSession = 5;
-    }
-    
-
-    const updateLastLogin = {
-      $set : {"base.lastLogin" : now}
-    }
-    if(loginBonusGranted){
-      updateLastLogin.$push = {
-        "finalUser.pointsPlatrform": {
-          action: "login",
-          earnedPoints: pointsEanredThisSession,
-          redeemedPoints: 0
-        }
-      }
-    
-    }
-    await Notification.create({
-            recipient: user._id,
-            sender: user._id,
-            message: "You earned 5 points for logging in today",
-          });
-    await User.findByIdAndUpdate({_id: user._id}, updateLastLogin);
+if (user?.base?.lastLogin) {
+  const lastLogin = new Date(user.base.lastLogin);
   
+  // 🗺️ Robust comparison using clear date strings
+  const nowDateStr = now.toISOString().split('T')[0];
+  const lastLoginDateStr = lastLogin.toISOString().split('T')[0];
+  
+  if (nowDateStr !== lastLoginDateStr) {
+    loginBonusGranted = true;
+    pointsEanredThisSession = 5;
+  }
+} else {
+  // If lastLogin is null/undefined, this is their first initial check-in log!
+  loginBonusGranted = true;
+  pointsEanredThisSession = 5;
+}
 
+// Prepare database payload updates
+const updateLastLogin = {
+  $set: { "base.lastLogin": now }
+};
+
+if (loginBonusGranted) {
+  updateLastLogin.$push = {
+    "finalUser.pointsPlatrform": {
+      action: "login",
+      earnedPoints: pointsEanredThisSession,
+      redeemedPoints: 0
+    }
+  };
+  
+  // Also increment total accumulation metrics so it updates 'finalUser.points'
+  updateLastLogin.$inc = { "finalUser.points": pointsEanredThisSession };
+
+  // Trigger Notification only if a bonus is earned
+  await Notification.create({
+    recipient: user._id,
+    sender: user._id,
+    message: "You earned 5 points for logging in today",
+  });
+}
+
+// Single persistent model call
+await User.findByIdAndUpdate(user._id, updateLastLogin);
+  
+     }
  const token = jwt.sign({
         email: user.email, 
         username: user.username,
@@ -122,9 +132,9 @@ authController.login = async(req, res, next) =>{
       {expiresIn: process.env.JWT_EXPIRATION})
 
       return  res.json({message:'Login Succesful', token, role, userId: user._id});
-     }
+     
    
-    }
+    
    
 
    
