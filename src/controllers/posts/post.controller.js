@@ -7,7 +7,7 @@ const ReferralLink = require('../../models/refferal.model');
 const User = require('../../models/user.model');
 const PointOfSale = require('../../models/pointOfSale.model');
 const Notification = require('../../models/notif.model');
- // const { Readable } = require('stream');
+// const { Readable } = require('stream');
 const postController = {};
 
 
@@ -71,14 +71,20 @@ postController.createPost = async (req, res) => {
 
     //ANTI-EXPLOIT PROTECTION
     let shouldAwardPostReferralPoints = false;
-    
+
     if (newReferralUser && newReferralUser !== owner) {
       // Check if this friend (owner) has already been rewarded under this link-owner's links
       const alreadyRewarded = await ReferralLink.findOne({
-        referrerUser: newReferralUser,
-        "referredUsers.user": ownerId,
-        "referredUsers.rewarded": true
+        referrerUser: newReferralUser, 
+        referredUsers: {
+          $elemMatch: {
+            user: ownerId,      
+            rewarded: true      
+          }
+        }
       });
+
+      console.log('alreadyRewarded', alreadyRewarded.referredUsers);
 
       // If they haven't been rewarded yet, flip the switch to allow point updates later
       if (!alreadyRewarded) {
@@ -115,26 +121,39 @@ postController.createPost = async (req, res) => {
     });
 
     // 4. Notification (Modified to check our safety guard switch)
-    if (shouldAwardPostReferralPoints) {
-      await Notification.create({
-        recipient: newReferralUser,
-        sender: owner,
-        message: "You gained 50 points via referral link!",
-      });
-      
-      // Update the referral tracking log to show this user's conversion points have been settled
-      await ReferralLink.updateOne(
-        { referrerUser: newReferralUser, "referredUsers.user": ownerId },
-        { $set: { "referredUsers.$.rewarded": true,
-          "referredUsers.$.pointsAwarded": 50
-         } }
-      );
+   // 4. Notification & Array Initialization
+if (shouldAwardPostReferralPoints) {
+  // Send the notification to the link creator
+  await Notification.create({
+    recipient: newReferralUser,
+    sender: owner,
+    message: "You gained 50 points via referral link!",
+  });
+  
+  // 🆕 PUSH THE NEW FRIEND INTO THE ARRAY SINCE THEY ARE NOT THERE YET
+  await ReferralLink.updateOne(
+    { referrerUser: newReferralUser },
+    { 
+      $push: { 
+        referredUsers: {
+          user: ownerId,              // Inject the friend's ID here
+          clickedAt: new Date(),
+          joinedAt: new Date(),
+          isActive: true,
+          visited: true,
+          blocked: true,
+          rewarded: true,             // Set to true so they can't exploit it again
+          pointsAwarded: 50           // Credit the points earned from this conversion
+        } 
+      }
     }
+  );
+}
 
     // 5. VISIT HISTORY
     const visitHistory = userDoc.finalUser.visitHistory || [];
     const existing = visitHistory.length > 0 && visitHistory.find(v =>
-      v.pointOfSaleId && 
+      v.pointOfSaleId &&
       v.pointOfSaleId.toString() === posId.toString()
     );
 
