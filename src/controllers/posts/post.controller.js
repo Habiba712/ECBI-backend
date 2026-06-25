@@ -153,8 +153,6 @@ if (shouldAwardPostReferralPoints) {
       $push: { 
         referredUsers: {
           user: ownerId,              // Inject the friend's ID here
-          clickedAt: new Date(),
-          joinedAt: new Date(),
           isActive: true,
           visited: true,
           blocked: true,
