@@ -138,6 +138,7 @@ console.log('posId', posId)
     })
 console.log('isCircularReferral', isCircularReferral)
     if(!isCircularReferral){
+      console.log('why are we here? ')
 if (shouldAwardPostReferralPoints) {
   // Send the notification to the link creator
   await Notification.create({

@@ -80,7 +80,6 @@ const ReferralLinkSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // helpful indexes
-ReferralLinkSchema.index({ referrerUser: 1, pos: 1 });
-ReferralLinkSchema.index({ linkId: 1 }, { unique: true });
+
 
 module.exports = mongoose.model('ReferralLink', ReferralLinkSchema);
