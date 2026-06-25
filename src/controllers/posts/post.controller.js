@@ -51,17 +51,21 @@ postController.createPost = async (req, res) => {
   try {
     const { caption, owner, referralUser, pos } = req.body;
 
+  
+
     if (!owner || !pos) {
       return res.status(400).json({ message: "Missing owner or pos" });
     }
 
-    const newReferralUser =
+    const rawReferralUser =
       referralUser && referralUser !== "" && referralUser !== "null"
         ? referralUser
         : undefined;
 
     const ownerId = new mongoose.Types.ObjectId(owner);
     const posId = new mongoose.Types.ObjectId(pos);
+    const newReferralUser = new mongoose.Types.ObjectId(rawReferralUser);
+
 
     // 1. Fetch user + POS
     const userDoc = await User.findById(ownerId);
@@ -113,18 +117,18 @@ postController.createPost = async (req, res) => {
 
     // 3. Create post
     const newPost = await Post.create({
-      owner,
+      owner:ownerId,
       referralUser: newReferralUser,
       pos: posId,
       photoUrl: uploadResult.secure_url,
       caption,
     });
 console.log('newReferralUser', newReferralUser)
-console.log('owner', owner)
+console.log('owner', ownerId)
 console.log('posId', posId)
 
     const isCircularReferral = await ReferralLink.findOne({
-      referrerUser: owner,
+      referrerUser: ownerId,
       pos: posId,
       referredUsers:{
         $elemMatch:{
@@ -138,7 +142,7 @@ if (shouldAwardPostReferralPoints) {
   // Send the notification to the link creator
   await Notification.create({
     recipient: newReferralUser,
-    sender: owner,
+    sender: ownerId,
     message: "You gained 50 points via referral link!",
   });
   
