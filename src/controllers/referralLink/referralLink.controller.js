@@ -160,8 +160,12 @@ referralLinkController.updateReferraLink = async (req, res, next) =>{
         );
 
     if (visitorIndex === -1) {
-            return res.status(404).json({ message: "Visitor not found in this referral" });
-        }
+      await ReferralLink.findOneAndUpdate(
+        {linkId},
+        {$push : {referredUsers : {user: visitorId, isActive: true, visited: false, rewarded: false, blocked: false, pointsAwarded: 0}}}
+      );
+         }
+        
     if(isExpired === true && isActive === true){
       referralLink.referredUsers[visitorIndex].isActive = true;
     }

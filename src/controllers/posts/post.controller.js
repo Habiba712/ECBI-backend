@@ -6,7 +6,7 @@ const Post = require('../../models/post.model');
 const User = require('../../models/user.model');
 const PointOfSale = require('../../models/pointOfSale.model');
 const Notification = require('../../models/notif.model');
-// const { Readable } = require('stream');
+ // const { Readable } = require('stream');
 const postController = {};
 
 
@@ -111,6 +111,7 @@ postController.createPost = async (req, res) => {
         sender: owner,
         message: "You gained 50 points via referral link to ",
       });
+
     }
 
     // 5. VISIT HISTORY (FIXED LOGIC — NO save(), NO updateOne MIXING)
@@ -164,6 +165,8 @@ postController.createPost = async (req, res) => {
       $inc: { "stats.totalVisits": 1 },
     });
 
+    
+
     // 9. RESPONSE
     return res.json({
       message: "Post created successfully",
@@ -177,6 +180,22 @@ postController.createPost = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 postController.getPostById = async (req, res, next) => {
   try {

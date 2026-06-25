@@ -95,7 +95,7 @@ authController.login = async(req, res, next) =>{
     }
     if(loginBonusGranted){
       updateLastLogin.$push = {
-        "finalUser.pointsPlatform": {
+        "finalUser.pointsPlatrform": {
           action: "login",
           earnedPoints: pointsEanredThisSession,
           redeemedPoints: 0
