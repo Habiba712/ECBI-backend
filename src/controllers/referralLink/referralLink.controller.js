@@ -147,8 +147,8 @@ referralLinkController.updateReferraLink = async (req, res, next) =>{
       const { linkId } = req.params;
 
   const {isExpired, visitorId, isActive, rewardedLinkOwner} = req.body;
-  console.log('dataaa', isExpired, visitorId);
-  console.log('reward', rewardedLinkOwner);  
+  // console.log('dataaa', isExpired, visitorId);
+  // console.log('reward', rewardedLinkOwner);  
 
   try{
     const referralLink = await ReferralLink.findOne({linkId});
@@ -156,9 +156,9 @@ referralLinkController.updateReferraLink = async (req, res, next) =>{
             return res.status(404).json({ message: "Referral link not found" });
         }
     const visitorIndex = referralLink.referredUsers.findIndex(
-            u => u.user?.toString() === visitorId
+            u => u.user?._id === visitorId
         );
-
+console.log('visitorIndex', visitorIndex);
     if (visitorIndex === -1) {
       await ReferralLink.findOneAndUpdate(
         {linkId},
