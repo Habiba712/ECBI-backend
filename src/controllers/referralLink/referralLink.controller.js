@@ -174,8 +174,8 @@ console.log('visitorIndex', visitorIndex);
           }}
       );
          }
-        
-    if(isExpired === true && isActive === true){
+    else{
+      if(isExpired === true && isActive === true){
       referralLink.referredUsers[visitorIndex].isActive = true;
     }
     if(isExpired === true && isActive === true && rewardedLinkOwner){
@@ -185,10 +185,13 @@ console.log('visitorIndex', visitorIndex);
       referralLink.referredUsers[visitorIndex].pointsAwarded += 20;
     }
     referralLink.referredUsers[visitorIndex].blocked = true;
+     await referralLink.save();
+    }
+    
 // I think the notification creation should happen at this point
 
 
-   await referralLink.save();
+  
 
         console.log('Update successful for visitor:', visitorId);
     return res.status(200).json(referralLink);
