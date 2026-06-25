@@ -148,55 +148,55 @@ referralLinkController.updateReferralLink = async (req, res, next) => {
     const { isExpired, visitorId, isActive, rewardedLinkOwner } = req.body;
     console.log('updateReferralLink IDK WHY THIS IS NOT WORKING', linkId, isExpired, visitorId, isActive, rewardedLinkOwner)
 
-    try {
-        let referralLink = await ReferralLink.findOne({ linkId });
-        if (!referralLink) {
-            return res.status(404).json({ message: "Referral link not found" });
-        }
+    // try {
+    //     let referralLink = await ReferralLink.findOne({ linkId });
+    //     if (!referralLink) {
+    //         return res.status(404).json({ message: "Referral link not found" });
+    //     }
 
-        const visitorIndex = referralLink.referredUsers.findIndex(
-            u => u.user?._id?.toString() === visitorId?.toString()
-        );
+    //     const visitorIndex = referralLink.referredUsers.findIndex(
+    //         u => u.user?._id?.toString() === visitorId?.toString()
+    //     );
 
-        if (visitorIndex === -1) {
-            // 🆕 FIRST TIME VISITING: Grant rewards normally!
-            referralLink = await ReferralLink.findOneAndUpdate(
-                { linkId },
-                { 
-                    $push: { 
-                        referredUsers: {
-                            user: visitorId,
-                            clickedAt: new Date(),
-                            joinedAt: new Date(),
-                            isActive: true,
-                            visited: true, // Mark visited true immediately
-                            blocked: true,
-                            rewarded: true,
-                            pointsAwarded: 20 // The friend gets their initial link-click reward
-                        } 
-                    },
-                    // Safely increment total points earned by the link owner
-                    $inc: { pointsEarned: rewardedLinkOwner || 0 }
-                },
-                { new: true }
-            );
-        } else {
-            // 🛑 REPEAT VISIT: Update flags only, DO NOT award additional points
-            if (isExpired === true && isActive === true) {
-                referralLink.referredUsers[visitorIndex].isActive = true;
-            }
+    //     if (visitorIndex === -1) {
+    //         // 🆕 FIRST TIME VISITING: Grant rewards normally!
+    //         referralLink = await ReferralLink.findOneAndUpdate(
+    //             { linkId },
+    //             { 
+    //                 $push: { 
+    //                     referredUsers: {
+    //                         user: visitorId,
+    //                         clickedAt: new Date(),
+    //                         joinedAt: new Date(),
+    //                         isActive: true,
+    //                         visited: true, // Mark visited true immediately
+    //                         blocked: true,
+    //                         rewarded: true,
+    //                         pointsAwarded: 20 // The friend gets their initial link-click reward
+    //                     } 
+    //                 },
+    //                 // Safely increment total points earned by the link owner
+    //                 $inc: { pointsEarned: rewardedLinkOwner || 0 }
+    //             },
+    //             { new: true }
+    //         );
+    //     } else {
+    //         // 🛑 REPEAT VISIT: Update flags only, DO NOT award additional points
+    //         if (isExpired === true && isActive === true) {
+    //             referralLink.referredUsers[visitorIndex].isActive = true;
+    //         }
             
-            // Set tracking markers but don't add math operators for points
-            referralLink.referredUsers[visitorIndex].visited = true;
-            referralLink.referredUsers[visitorIndex].blocked = true;
+    //         // Set tracking markers but don't add math operators for points
+    //         referralLink.referredUsers[visitorIndex].visited = true;
+    //         referralLink.referredUsers[visitorIndex].blocked = true;
             
-            await referralLink.save();
-        }
+    //         await referralLink.save();
+    //     }
 
-        return res.status(200).json(referralLink);
-    } catch (err) {
-        next(err);
-    }
+    //     return res.status(200).json(referralLink);
+    // } catch (err) {
+    //     next(err);
+    // }
 };
 
 module.exports = referralLinkController;
