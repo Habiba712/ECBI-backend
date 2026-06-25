@@ -149,9 +149,16 @@ if (shouldAwardPostReferralPoints) {
   
   // 🆕 PUSH THE NEW FRIEND INTO THE ARRAY SINCE THEY ARE NOT THERE YET
   await ReferralLink.updateOne(
-    { referrerUser: newReferralUser },
+    { referrerUser: newReferralUser,
+      pos: posId,
+      referredUsers:{
+        $elemMatch:{
+          user: newReferralUser
+        }
+      }
+     },
     { 
-      $push: { 
+      $set: { 
         referredUsers: {
           user: ownerId,              // Inject the friend's ID here
           isActive: true,
