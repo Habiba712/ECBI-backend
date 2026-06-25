@@ -120,8 +120,18 @@ postController.createPost = async (req, res) => {
       caption,
     });
 
-    // 4. Notification (Modified to check our safety guard switch)
-   // 4. Notification & Array Initialization
+    const isCircularReferral = await ReferralLink.findOne({
+      referrerUser: owner,
+      pos: posId,
+      referredUsers:{
+        $elemMatch:{
+          user: newReferralUser,
+          rewarded: true
+        }
+      }
+    })
+
+    if(!isCircularReferral){
 if (shouldAwardPostReferralPoints) {
   // Send the notification to the link creator
   await Notification.create({
@@ -149,6 +159,8 @@ if (shouldAwardPostReferralPoints) {
     }
   );
 }
+    }
+
 
     // 5. VISIT HISTORY
     const visitHistory = userDoc.finalUser.visitHistory || [];
