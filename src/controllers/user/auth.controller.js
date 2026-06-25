@@ -88,7 +88,7 @@ authController.login = async(req, res, next) =>{
       loginBonusGranted = true;
       pointsEanredThisSession = 5;
     }
-    }
+    
 
     const updateLastLogin = {
       $set : {"base.lastLogin" : now}
@@ -124,7 +124,7 @@ authController.login = async(req, res, next) =>{
       return  res.json({message:'Login Succesful', token, role, userId: user._id});
      }
    
-
+    }
    
 
    
