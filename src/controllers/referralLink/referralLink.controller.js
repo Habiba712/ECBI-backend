@@ -164,13 +164,7 @@ console.log('visitorIndex', visitorIndex);
       await ReferralLink.findOneAndUpdate(
         {linkId},
         {$push : 
-          {"referredUsers.user":visitorId,
-
-            "referredUsers.isActive": true,
-            "referredUsers.rewarded": true,
-            "referredUsers.pointsAwarded": 50,
-            "referredUsers.visited": true,
-            "referredUsers.blocked": true
+          {"referredUsers.user":visitorId
           }}
       );
          }
