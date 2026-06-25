@@ -190,7 +190,7 @@ referralLinkController.updateReferralLink = async (req, res, next) => {
                 referralLink.pointsEarned += rewardedLinkOwner;
                 referralLink.referredUsers[visitorIndex].visited = true;
                 referralLink.referredUsers[visitorIndex].rewarded = true;
-                referralLink.referredUsers[visitorIndex].pointsAwarded += 20;
+                referralLink.referredUsers[visitorIndex].pointsAwarded += 50;
             }
             referralLink.referredUsers[visitorIndex].blocked = true;
             
