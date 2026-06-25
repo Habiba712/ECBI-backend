@@ -119,18 +119,19 @@ postController.createPost = async (req, res) => {
       photoUrl: uploadResult.secure_url,
       caption,
     });
+console.log('newReferralUser', newReferralUser)
+console.log('owner', owner)
 
     const isCircularReferral = await ReferralLink.findOne({
       referrerUser: owner,
       pos: posId,
       referredUsers:{
         $elemMatch:{
-          user: newReferralUser,
-          rewarded: true
+          user: newReferralUser
         }
       }
     })
-
+console.log('isCircularReferral', isCircularReferral)
     if(!isCircularReferral){
 if (shouldAwardPostReferralPoints) {
   // Send the notification to the link creator
@@ -160,7 +161,7 @@ if (shouldAwardPostReferralPoints) {
   );
 }
     }
-
+console.log('yeeeeeeeey no circular referral')
 
     // 5. VISIT HISTORY
     const visitHistory = userDoc.finalUser.visitHistory || [];
