@@ -121,6 +121,7 @@ postController.createPost = async (req, res) => {
     });
 console.log('newReferralUser', newReferralUser)
 console.log('owner', owner)
+console.log('posId', posId)
 
     const isCircularReferral = await ReferralLink.findOne({
       referrerUser: owner,
