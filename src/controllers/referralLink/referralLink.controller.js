@@ -175,7 +175,7 @@ referralLinkController.updateReferralLink = async (req, res, next) => {
                             visited: false,
                             blocked: false,
                             rewarded: false,
-                            pointsAwarded: 0
+                            pointsAwarded: 50
                         } 
                     } 
                 },
