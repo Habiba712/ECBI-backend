@@ -23,7 +23,7 @@ router.get('/getAllReferralLinks',
 router.put('/updateReferralLink/:linkId',
     // authMiddleware,
     // checkRole(['SUPER_ADMIN']),
-    referralLinkController.updateReferraLink
+    referralLinkController.updateReferralLink
 );
 
 router.get('/getReferralLinksByUserId/:userId',

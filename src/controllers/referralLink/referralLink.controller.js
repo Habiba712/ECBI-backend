@@ -143,56 +143,68 @@ referralLinkController.findReferralLinkForModal = async (req, res, next)=>{
   }
 }
 
-referralLinkController.updateReferraLink = async (req, res, next) =>{
-      const { linkId } = req.params;
-      console.log('linkId', linkId);
+referralLinkController.updateReferralLink = async (req, res, next) => {
+    const { linkId } = req.params;
+    const { isExpired, visitorId, isActive, rewardedLinkOwner } = req.body;
 
-  const {isExpired, visitorId, isActive, rewardedLinkOwner} = req.body;
-  // console.log('dataaa', isExpired, visitorId);
-  // console.log('reward', rewardedLinkOwner);  
-
-  try{
-    const referralLink = await ReferralLink.findOne({linkId});
-    if (!referralLink) {
+    try {
+        // Fetch the referral link document
+        let referralLink = await ReferralLink.findOne({ linkId });
+        if (!referralLink) {
             return res.status(404).json({ message: "Referral link not found" });
         }
-    const visitorIndex = referralLink.referredUsers.findIndex(
-            u => u.user?._id === visitorId
+
+        // 1. FIXED: Convert IDs to strings so the comparison works perfectly
+        const visitorIndex = referralLink.referredUsers.findIndex(
+            u => u.user?._id?.toString() === visitorId?.toString()
         );
-console.log('visitorIndex', visitorIndex);
-    if (visitorIndex === -1) {
-      await ReferralLink.findOneAndUpdate(
-        {linkId},
-        {$push : 
-          {"referredUsers.user":visitorId
-          }}
-      );
-         }
-    else{
-      if(isExpired === true && isActive === true){
-      referralLink.referredUsers[visitorIndex].isActive = true;
-    }
-    if(isExpired === true && isActive === true && rewardedLinkOwner){
-      referralLink.pointsEarned += rewardedLinkOwner;
-      referralLink.referredUsers[visitorIndex].visited= true;
-      referralLink.referredUsers[visitorIndex].rewarded = true;
-      referralLink.referredUsers[visitorIndex].pointsAwarded += 20;
-    }
-    referralLink.referredUsers[visitorIndex].blocked = true;
-     await referralLink.save();
-    }
-    
-// I think the notification creation should happen at this point
 
+        console.log('visitorIndex', visitorIndex);
 
-  
+        if (visitorIndex === -1) {
+            // 2. FIXED: Push a proper subdocument object into the array, and return the updated document
+            referralLink = await ReferralLink.findOneAndUpdate(
+                { linkId },
+                { 
+                    $push: { 
+                        referredUsers: {
+                            user: visitorId,
+                            clickedAt: new Date(),
+                            joinedAt: new Date(),
+                            isActive: true,
+                            visited: false,
+                            blocked: false,
+                            rewarded: false,
+                            pointsAwarded: 0
+                        } 
+                    } 
+                },
+                { new: true } // This ensures the returned document contains the newly added visitor
+            );
+        } else {
+            // Existing visitor update logic
+            if (isExpired === true && isActive === true) {
+                referralLink.referredUsers[visitorIndex].isActive = true;
+            }
+            if (isExpired === true && isActive === true && rewardedLinkOwner) {
+                referralLink.pointsEarned += rewardedLinkOwner;
+                referralLink.referredUsers[visitorIndex].visited = true;
+                referralLink.referredUsers[visitorIndex].rewarded = true;
+                referralLink.referredUsers[visitorIndex].pointsAwarded += 20;
+            }
+            referralLink.referredUsers[visitorIndex].blocked = true;
+            
+            await referralLink.save();
+        }
+
+        // 🔔 [NOTIFICATION PLACEHOLDER]
+        // This is the ideal insertion point for creating and dispatching your in-app notification tracking objects.
 
         console.log('Update successful for visitor:', visitorId);
-    return res.status(200).json(referralLink);
-  }catch(err){
-    next(err)
-  }
-
-}
+        return res.status(200).json(referralLink);
+    } catch (err) {
+        next(err);
+    }
+};
 
 module.exports = referralLinkController;
