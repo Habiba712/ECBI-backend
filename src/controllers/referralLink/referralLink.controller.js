@@ -148,21 +148,17 @@ referralLinkController.updateReferralLink = async (req, res, next) => {
     const { isExpired, visitorId, isActive, rewardedLinkOwner } = req.body;
 
     try {
-        // Fetch the referral link document
         let referralLink = await ReferralLink.findOne({ linkId });
         if (!referralLink) {
             return res.status(404).json({ message: "Referral link not found" });
         }
 
-        // 1. FIXED: Convert IDs to strings so the comparison works perfectly
         const visitorIndex = referralLink.referredUsers.findIndex(
             u => u.user?._id?.toString() === visitorId?.toString()
         );
 
-        console.log('visitorIndex', visitorIndex);
-
         if (visitorIndex === -1) {
-            // 2. FIXED: Push a proper subdocument object into the array, and return the updated document
+            // 🆕 FIRST TIME VISITING: Grant rewards normally!
             referralLink = await ReferralLink.findOneAndUpdate(
                 { linkId },
                 { 
@@ -172,35 +168,30 @@ referralLinkController.updateReferralLink = async (req, res, next) => {
                             clickedAt: new Date(),
                             joinedAt: new Date(),
                             isActive: true,
-                            visited: false,
-                            blocked: false,
-                            rewarded: false,
-                            pointsAwarded: 50
+                            visited: true, // Mark visited true immediately
+                            blocked: true,
+                            rewarded: true,
+                            pointsAwarded: 20 // The friend gets their initial link-click reward
                         } 
-                    } 
+                    },
+                    // Safely increment total points earned by the link owner
+                    $inc: { pointsEarned: rewardedLinkOwner || 0 }
                 },
-                { new: true } // This ensures the returned document contains the newly added visitor
+                { new: true }
             );
         } else {
-            // Existing visitor update logic
+            // 🛑 REPEAT VISIT: Update flags only, DO NOT award additional points
             if (isExpired === true && isActive === true) {
                 referralLink.referredUsers[visitorIndex].isActive = true;
             }
-            if (isExpired === true && isActive === true && rewardedLinkOwner) {
-                referralLink.pointsEarned += rewardedLinkOwner;
-                referralLink.referredUsers[visitorIndex].visited = true;
-                referralLink.referredUsers[visitorIndex].rewarded = true;
-                referralLink.referredUsers[visitorIndex].pointsAwarded += 50;
-            }
+            
+            // Set tracking markers but don't add math operators for points
+            referralLink.referredUsers[visitorIndex].visited = true;
             referralLink.referredUsers[visitorIndex].blocked = true;
             
             await referralLink.save();
         }
 
-        // 🔔 [NOTIFICATION PLACEHOLDER]
-        // This is the ideal insertion point for creating and dispatching your in-app notification tracking objects.
-
-        console.log('Update successful for visitor:', visitorId);
         return res.status(200).json(referralLink);
     } catch (err) {
         next(err);

@@ -62,19 +62,31 @@ postController.createPost = async (req, res) => {
     const ownerId = new mongoose.Types.ObjectId(owner);
     const posId = new mongoose.Types.ObjectId(pos);
 
-    console.log("POS ID", posId);
-    console.log("OWNER ID", ownerId);
-
     // 1. Fetch user + POS
     const userDoc = await User.findById(ownerId);
     if (!userDoc) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const posDoc = await PointOfSale.findById(posId).populate("ownerId");
+    //ANTI-EXPLOIT PROTECTION
+    let shouldAwardPostReferralPoints = false;
+    
+    if (newReferralUser && newReferralUser !== owner) {
+      // Check if this friend (owner) has already been rewarded under this link-owner's links
+      const alreadyRewarded = await ReferralLink.findOne({
+        owner: newReferralUser,
+        "referredUsers.user": ownerId,
+        "referredUsers.rewarded": true
+      });
 
-    const businessName =
-      posDoc?.ownerId?.ownerInfo?.businessName || "Unknown";
+      // If they haven't been rewarded yet, flip the switch to allow point updates later
+      if (!alreadyRewarded) {
+        shouldAwardPostReferralPoints = true;
+      }
+    }
+
+    const posDoc = await PointOfSale.findById(posId).populate("ownerId");
+    const businessName = posDoc?.ownerId?.ownerInfo?.businessName || "Unknown";
 
     // 2. Upload image
     if (!req.file) {
@@ -101,24 +113,23 @@ postController.createPost = async (req, res) => {
       caption,
     });
 
-    // 4. Notification (safe)
-    if (
-      newReferralUser &&
-      newReferralUser !== owner
-    ) {
+    // 4. Notification (Modified to check our safety guard switch)
+    if (shouldAwardPostReferralPoints) {
       await Notification.create({
         recipient: newReferralUser,
         sender: owner,
-        message: "You gained 50 points via referral link to ",
+        message: "You gained 50 points via referral link!",
       });
-
+      
+      // Update the referral tracking log to show this user's conversion points have been settled
+      await ReferralLink.updateOne(
+        { owner: newReferralUser, "referredUsers.user": ownerId },
+        { $set: { "referredUsers.$.rewarded": true } }
+      );
     }
 
-    // 5. VISIT HISTORY (FIXED LOGIC — NO save(), NO updateOne MIXING)
-
+    // 5. VISIT HISTORY
     const visitHistory = userDoc.finalUser.visitHistory || [];
-
-   
     const existing = visitHistory.length > 0 && visitHistory.find(v =>
       v.pointOfSaleId && 
       v.pointOfSaleId.toString() === posId.toString()
@@ -143,7 +154,7 @@ postController.createPost = async (req, res) => {
     );
     visits.add(posId.toString());
 
-    // 7. SINGLE ATOMIC UPDATE (IMPORTANT)
+    // 7. SINGLE ATOMIC UPDATE
     await User.updateOne(
       { _id: ownerId },
       {
@@ -165,12 +176,11 @@ postController.createPost = async (req, res) => {
       $inc: { "stats.totalVisits": 1 },
     });
 
-    
-
     // 9. RESPONSE
     return res.json({
       message: "Post created successfully",
       post: newPost,
+      referralPointsAwarded: shouldAwardPostReferralPoints
     });
   } catch (err) {
     console.error("CREATE POST ERROR:", err);
@@ -180,7 +190,6 @@ postController.createPost = async (req, res) => {
     });
   }
 };
-
 
 
 
