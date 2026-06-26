@@ -123,7 +123,10 @@ const pointOfSaleSchema = new mongoose.Schema({
         type: String,
         default: "10:00 PM"
       },
-      closed: false
+      closed: {
+        type: Boolean,
+        default: false
+      }
     },
     tuesday: {
       open: {
@@ -132,7 +135,10 @@ const pointOfSaleSchema = new mongoose.Schema({
 
       },
       close: { type: String, default: "10:00 PM" },
-      closed: false
+      closed: {
+        type: Boolean,
+        default: false
+      }
     
 
   },
@@ -143,7 +149,10 @@ const pointOfSaleSchema = new mongoose.Schema({
         default: "9:00 AM"
       },
       close: { type: String, default: "10:00 PM" },
-      closed: false
+      closed: {
+        type: Boolean,
+        default: false
+      }
     
   },
   thursday: {
@@ -152,7 +161,10 @@ const pointOfSaleSchema = new mongoose.Schema({
       default: "9:00 AM"
     },
     close: { type: String, default: "10:00 PM" },
-    closed: false
+    closed: {
+      type: Boolean,
+      default: false
+    }
   },
  friday: {
     open: {
@@ -160,7 +172,10 @@ const pointOfSaleSchema = new mongoose.Schema({
       default: "9:00 AM"
     },
     close: { type: String, default: "10:00 PM" },
-    closed: false 
+    closed: {
+      type: Boolean,
+      default: false
+    } 
 },
 saturday: {
   open: {
@@ -168,7 +183,10 @@ saturday: {
     default: "9:00 AM"
   },
 close: { type: String, default: "10:00 PM" },
-closed: false
+closed: {
+  type: Boolean,
+  default: false
+}
 
 },
 sunday: {
@@ -177,7 +195,10 @@ sunday: {
     default: "9:00 AM"
   },
 close: { type: String, default: "10:00 PM" },
-closed: false 
+closed: {
+  type: Boolean,
+  default: false
+} 
   }},
   
 
