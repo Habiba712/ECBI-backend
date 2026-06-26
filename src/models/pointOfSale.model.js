@@ -113,15 +113,16 @@ const pointOfSaleSchema = new mongoose.Schema({
   
   // === OPERATING HOURS ===
   hours: {
-    monday: { open: String, close: String, closed: Boolean,
+    monday: { open: '10:00', close: '18:00', closed: false,
       
      },
-    tuesday: { open: String, close: String, closed: Boolean },
-    wednesday: { open: String, close: String, closed: Boolean },
-    thursday: { open: String, close: String, closed: Boolean },
-    friday: { open: String, close: String, closed: Boolean },
-    saturday: { open: String, close: String, closed: Boolean },
-    sunday: { open: String, close: String, closed: Boolean }
+    tuesday: { open: '10:00', close: '18:00', closed: false },
+    wednesday: { open: '10:00', close: '18:00', closed: false },
+    thursday: { open: '10:00', close: '18:00', closed: false },
+    friday: { open: '10:00', close: '18:00', closed: false },
+    saturday: { open: '10:00', close: '18:00', closed: false },
+    sunday: { open: '10:00', close: '18:00', closed: false }
+    
   },
   
   // === STATISTICS === (updated automatically)
