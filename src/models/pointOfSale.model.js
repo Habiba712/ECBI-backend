@@ -112,7 +112,8 @@ const pointOfSaleSchema = new mongoose.Schema({
   },
 
   // === OPERATING HOURS ===
-  hours: [{
+  hours: [
+    {
     monday: {
       open: {
         type: String,
@@ -124,81 +125,135 @@ const pointOfSaleSchema = new mongoose.Schema({
         default: '10:00 PM'
       }
       , closed: Boolean,
+      createdAt: {
+        type: Date,
+        default: Date.now
+      },
+      updatedAt: {
+        type: Date,
+        default: Date.now
+      },
 
     }},
-    {tuesday: {
-      open: {
-        type: String,
-        default: '9:00 AM'
-      },
-      close: {
-        type: String,
-        default: '10:00 PM'
-      }
-      , closed: Boolean,
-
+    {
+      tuesday: {
+        open: {
+          type: String,
+          default: '9:00 AM'
+        },
+        close: {
+          type: String,
+          default: '10:00 PM'
+        }
+        , closed: Boolean,
+        createdAt: {
+          type: Date,
+          default: Date.now
+        },
+        updatedAt: {
+          type: Date,
+          default: Date.now
+        } 
     }},
-    {wednesday: {
-      open: {
-        type: String,
-        default: '9:00 AM'
-      },
-      close: {
-        type: String,
-        default: '10:00 PM'
-      }
-      , closed: Boolean,
-
+    {
+      wednesday: {
+        open: {
+          type: String,
+          default: '9:00 AM'
+        },
+        close: {
+          type: String,
+          default: '10:00 PM'
+        }
+        , closed: Boolean,
+        createdAt: {
+          type: Date,
+          default: Date.now
+        },
+        updatedAt: {
+          type: Date,
+          default: Date.now
+        } 
     }},
-    {thursday: {
-      open: {
-        type: String,
-        default: '9:00 AM'
-      },
-      close: {
-        type: String,
-        default: '10:00 PM'
-      }
-      , closed: Boolean,
-
+    {
+      thursday: {
+        open: {
+          type: String,
+          default: '9:00 AM'
+        },
+        close: {
+          type: String,
+          default: '10:00 PM'
+        }
+        , closed: Boolean,
+        createdAt: {
+          type: Date,
+          default: Date.now
+        },
+        updatedAt: {
+          type: Date,
+          default: Date.now
+        } 
     }},
-    {friday: {
-      open: {
-        type: String,
-        default: '9:00 AM'
-      },
-      close: {
-        type: String,
-        default: '10:00 PM'
-      }
-      , closed: Boolean,
-
+    {
+      friday: {
+        open: {
+          type: String,
+          default: '9:00 AM'
+        },
+        close: {
+          type: String,
+          default: '10:00 PM'
+        }
+        , closed: Boolean,
+        createdAt: {
+          type: Date,
+          default: Date.now
+        },
+        updatedAt: {
+          type: Date,
+          default: Date.now
+        } 
     }},
-    {saturday: {
-      open: {
-        type: String,
-        default: '9:00 AM'
-      },
-      close: {
-        type: String,
-        default: '10:00 PM'
-      }
-      , closed: Boolean,
-
+    {
+      saturday: {
+        open: {
+          type: String,
+          default: '9:00 AM'
+        },
+        close: {
+          type: String,
+          default: '10:00 PM'
+        }
+        , closed: Boolean,
+        createdAt: {
+          type: Date,
+          default: Date.now
+        },
+        updatedAt: {
+          type: Date,
+          default: Date.now
+        } 
     }},
-    {sunday: {
-      open: {
-        type: String,
-        default: '9:00 AM'
-      },
-      close: {
-        type: String,
-        default: '10:00 PM'
-      }
-      , closed: Boolean,
-
-    }}
-
+    {
+      sunday: {
+        open: {
+          type: String,
+          default: '9:00 AM'
+        },
+        close: {
+          type: String,
+          default: '10:00 PM'
+        }
+        , closed: Boolean,
+        createdAt: {
+          type: Date,
+          default: Date.now
+        },
+        updatedAt: {
+          type: Date,
+          default: Date.now
+        } }}
     
   ],
 
