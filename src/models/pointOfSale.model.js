@@ -121,7 +121,7 @@ const pointOfSaleSchema = new mongoose.Schema({
       },
       close: {
         type: String,
-        default: "10:00 PM"
+        default: "3:00 PM"
       },
       closed: {
         type: Boolean,
