@@ -3,7 +3,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/user.model');
- const { sendEmail } = require('../../utils/sendMail');
+const { sendEmail } = require('../../utils/sendMail');
 const Blacklist = require('../../models/Blacklist');
 const Notification = require('../../models/notif.model');
 
@@ -11,45 +11,45 @@ require('../../models/pointOfSale.model'); // Add this line to import the PointD
 
 const authController = {};
 
-authController.login = async(req, res, next) =>{
-  
-  try{
-    const {email, password}= req.body;
+authController.login = async (req, res, next) => {
 
-    console.log('email',email)
-    console.log('password',password)
+  try {
+    const { email, password } = req.body;
 
-    const user = await User?.findOne({ 
-     $or:[
-      {"base.email": email},
-      {"ownerInfo.email":email}
-     ]
+    console.log('email', email)
+    console.log('password', password)
+
+    const user = await User?.findOne({
+      $or: [
+        { "base.email": email },
+        { "ownerInfo.email": email }
+      ]
     })
     const role = user?.base?.role;
     // console.log('user',user)
- if(!user){
-      return res.status(401).json({message: 'User Not Found'})
+    if (!user) {
+      return res.status(401).json({ message: 'User Not Found' })
     }
-    if(user && user.base.role === 'RESTO_SUPER_ADMIN'){
-      console.log('role',user.base.role);
-      const getOwner = await User.findOne({_id: user._id}).populate('ownerInfo.ownedPos');
+    if (user && user.base.role === 'RESTO_SUPER_ADMIN') {
+      console.log('role', user.base.role);
+      const getOwner = await User.findOne({ _id: user._id }).populate('ownerInfo.ownedPos');
       // console.log('getOwner',getOwner)
-       const pointOfSaleName = getOwner?.ownerInfo?.ownedPos ? getOwner?.ownerInfo?.ownedPos[0]?.name: null;
-    const businessName = getOwner?.ownerInfo?.businessName ? getOwner?.ownerInfo?.businessName: null;
-    const role = user.base.role;
-    console.log('role e',role)
-    console.log('passs',user.base.password)
-    
-
-    const validatePassword = await bcrypt.compare(password, user?.base?.password);
+      const pointOfSaleName = getOwner?.ownerInfo?.ownedPos ? getOwner?.ownerInfo?.ownedPos[0]?.name : null;
+      const businessName = getOwner?.ownerInfo?.businessName ? getOwner?.ownerInfo?.businessName : null;
+      const role = user.base.role;
+      console.log('role e', role)
+      console.log('passs', user.base.password)
 
 
-    if(!validatePassword){
-      return res.status(401).json({message: 'Invalid Credentials'})
-    }
+      const validatePassword = await bcrypt.compare(password, user?.base?.password);
 
-     const token = jwt.sign({
-        email: user.email, 
+
+      if (!validatePassword) {
+        return res.status(401).json({ message: 'Invalid Credentials' })
+      }
+
+      const token = jwt.sign({
+        email: user.email,
         username: user.username,
         telephone: user.telephone,
         id: user._id,
@@ -57,89 +57,89 @@ authController.login = async(req, res, next) =>{
         pointOfSaleName,
         businessName,
       },
-      process.env.JWT_SECRET,
-      {expiresIn: process.env.JWT_EXPIRATION})
- return res.json({message:'Login Succesful', token, role, pointOfSaleName, businessName, userId: user._id});
-     }
-     else{
-          const role = user?.base?.role || "FINAL_USER";
-
-              const validatePassword = await bcrypt.compare(password, user.base.password);
-
-
-    if(!validatePassword){
-      return res.status(401).json({message: 'Invalid Credentials'})
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRATION })
+      return res.json({ message: 'Login Succesful', token, role, pointOfSaleName, businessName, userId: user._id });
     }
+    else {
+      const role = user?.base?.role || "FINAL_USER";
 
- const now = new Date();
-let loginBonusGranted = false;
-let pointsEanredThisSession = 0;  
+      const validatePassword = await bcrypt.compare(password, user.base.password);
 
-if (user?.base?.lastLogin) {
-  const lastLogin = new Date(user.base.lastLogin);
-  
-  // 🗺️ Robust comparison using clear date strings
-  const nowDateStr = now.toISOString().split('T')[0];
-  const lastLoginDateStr = lastLogin.toISOString().split('T')[0];
-  
-  if (nowDateStr !== lastLoginDateStr) {
-    loginBonusGranted = true;
-    pointsEanredThisSession = 5;
-  }
-} else {
-  // If lastLogin is null/undefined, this is their first initial check-in log!
-  loginBonusGranted = true;
-  pointsEanredThisSession = 5;
-}
 
-// Prepare database payload updates
-const updateLastLogin = {
-  $set: { "base.lastLogin": now }
-};
+      if (!validatePassword) {
+        return res.status(401).json({ message: 'Invalid Credentials' })
+      }
 
-if (loginBonusGranted) {
-  updateLastLogin.$push = {
-    "finalUser.pointsPlatrform": {
-      action: "login",
-      earnedPoints: pointsEanredThisSession,
-      redeemedPoints: 0
+      const now = new Date();
+      let loginBonusGranted = false;
+      let pointsEanredThisSession = 0;
+
+      if (user?.base?.lastLogin) {
+        const lastLogin = new Date(user.base.lastLogin);
+
+        // 🗺️ Robust comparison using clear date strings
+        const nowDateStr = now.toISOString().split('T')[0];
+        const lastLoginDateStr = lastLogin.toISOString().split('T')[0];
+
+        if (nowDateStr !== lastLoginDateStr) {
+          loginBonusGranted = true;
+          pointsEanredThisSession = 5;
+        }
+      } else {
+        // If lastLogin is null/undefined, this is their first initial check-in log!
+        loginBonusGranted = true;
+        pointsEanredThisSession = 5;
+      }
+
+      // Prepare database payload updates
+      const updateLastLogin = {
+        $set: { "base.lastLogin": now }
+      };
+
+      if (loginBonusGranted) {
+        updateLastLogin.$push = {
+          "finalUser.pointsPlatrform": {
+            action: "login",
+            earnedPoints: pointsEanredThisSession,
+            redeemedPoints: 0
+          }
+        };
+
+        // Also increment total accumulation metrics so it updates 'finalUser.points'
+        // updateLastLogin.$inc = { "finalUser.points": pointsEanredThisSession };
+
+        // Trigger Notification only if a bonus is earned
+        await Notification.create({
+          recipient: user._id,
+          sender: user._id,
+          message: "You earned 5 points for logging in today",
+        });
+      }
+
+      // Single persistent model call
+      await User.findByIdAndUpdate(user._id, updateLastLogin);
+
     }
-  };
-  
-  // Also increment total accumulation metrics so it updates 'finalUser.points'
-  updateLastLogin.$inc = { "finalUser.points": pointsEanredThisSession };
-
-  // Trigger Notification only if a bonus is earned
-  await Notification.create({
-    recipient: user._id,
-    sender: user._id,
-    message: "You earned 5 points for logging in today",
-  });
-}
-
-// Single persistent model call
-await User.findByIdAndUpdate(user._id, updateLastLogin);
-  
-     }
- const token = jwt.sign({
-        email: user.email, 
-        username: user.username,
-        telephone: user.telephone,
-        id: user._id,
-        role
-      },
+    const token = jwt.sign({
+      email: user.email,
+      username: user.username,
+      telephone: user.telephone,
+      id: user._id,
+      role
+    },
       process.env.JWT_SECRET,
-      {expiresIn: process.env.JWT_EXPIRATION})
+      { expiresIn: process.env.JWT_EXPIRATION })
 
-      return  res.json({message:'Login Succesful', token, role, userId: user._id});
-     
-   
-    
-   
+    return res.json({ message: 'Login Succesful', token, role, userId: user._id });
 
-   
-    
-  }catch(err){
+
+
+
+
+
+
+  } catch (err) {
     next(err)
   }
 
@@ -167,7 +167,7 @@ authController.forgotPassword = async (req, res) => {
     <p>Click <a href="${resetLink}">here</a> to reset your password.</p>
     <p>This link expires in 15 minutes.</p>
   `;
-await sendEmail(email, "ECBI Password Reset", html);
+    await sendEmail(email, "ECBI Password Reset", html);
 
     res.json({ message: "Password reset link sent to your email." });
   } catch (err) {
@@ -191,7 +191,7 @@ authController.resetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     await user.save();
-console.log('password reset', newPassword)
+    console.log('password reset', newPassword)
     res.json({ message: "Password reset successful!" });
   } catch (err) {
     console.error(err);
@@ -224,29 +224,29 @@ authController.logout = async (req, res) => {
 
 
 authController.verifySession = async (req, res, next) => {
-    
-    try {
-       
-        const dbUser = await User.findById(req?.user?.id).select('-base.password');  
-         if (!dbUser) {
-             console.log(`User ID ${req.user.id} was deleted. invalidating session.`);
-            return res.status(401).json({ message: 'User associated with this session no longer exists.' });
-        }
 
-        //  if (dbUser.base && dbUser.base.enabled === false) {
-        //     console.log(`User ID ${req.user._id} is disabled. invalidating session.`);
-        //     return res.status(401).json({ message: 'Account is disabled.' });
-        // }
+  try {
 
-        return res.status(200).json({
-            message: 'Session valid',
-            user: dbUser 
-        });
-
-    } catch (err) {
-         console.error('Session verification database error:', err);
-        next(err);  
+    const dbUser = await User.findById(req?.user?.id).select('-base.password');
+    if (!dbUser) {
+      console.log(`User ID ${req.user.id} was deleted. invalidating session.`);
+      return res.status(401).json({ message: 'User associated with this session no longer exists.' });
     }
+
+    //  if (dbUser.base && dbUser.base.enabled === false) {
+    //     console.log(`User ID ${req.user._id} is disabled. invalidating session.`);
+    //     return res.status(401).json({ message: 'Account is disabled.' });
+    // }
+
+    return res.status(200).json({
+      message: 'Session valid',
+      user: dbUser
+    });
+
+  } catch (err) {
+    console.error('Session verification database error:', err);
+    next(err);
+  }
 };
 module.exports = authController;
 
