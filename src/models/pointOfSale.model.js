@@ -149,7 +149,7 @@ const pointOfSaleSchema = new mongoose.Schema({
       closed: false
     }
   },
-  }
+  
 
   // === STATISTICS === (updated automatically)
   stats: {
