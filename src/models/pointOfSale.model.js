@@ -114,41 +114,71 @@ const pointOfSaleSchema = new mongoose.Schema({
   // === OPERATING HOURS ===
   hours: {
      monday: {
-      open: "9:00 AM",
-      close: "10:00 PM",
+      open: {
+        type: String,
+        default: "9:00 AM"
+
+      },
+      close: {
+        type: String,
+        default: "10:00 PM"
+      },
       closed: false
     },
     tuesday: {
-      open: "9:00 AM",
-      close: "10:00 PM",
+      open: {
+        type: String,
+        default: "9:00 AM"
+
+      },
+      close: { type: String, default: "10:00 PM" },
       closed: false
-    },
-    wednesday: {
-      open: "9:00 AM",
-      close: "10:00 PM",
-      closed: false
-    }, 
-    thursday: {
-      open: "9:00 AM",
-      close: "10:00 PM",
-      closed: false
-    },  
-    friday: {
-      open: "9:00 AM",
-      close: "10:00 PM",
-      closed: false
-    },  
-    saturday: {
-      open: "9:00 AM",
-      close: "10:00 PM",
-      closed: false
-    },
-    sunday: { 
-      open: "9:00 AM",
-      close: "10:00 PM",
-      closed: false
-    }
+    
+
   },
+  
+   wednesday: {
+      open: {
+        type: String,
+        default: "9:00 AM"
+      },
+      close: { type: String, default: "10:00 PM" },
+      closed: false
+    
+  },
+  thursday: {
+    open: {
+      type: String,
+      default: "9:00 AM"
+    },
+    close: { type: String, default: "10:00 PM" },
+    closed: false
+  },
+ friday: {
+    open: {
+      type: String,
+      default: "9:00 AM"
+    },
+    close: { type: String, default: "10:00 PM" },
+    closed: false 
+},
+saturday: {
+  open: {
+    type: String,
+    default: "9:00 AM"
+  },
+close: { type: String, default: "10:00 PM" },
+closed: false
+
+},
+sunday: {
+  open: {
+    type: String,
+    default: "9:00 AM"
+  },
+close: { type: String, default: "10:00 PM" },
+closed: false 
+  }},
   
 
   // === STATISTICS === (updated automatically)
