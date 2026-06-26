@@ -112,7 +112,7 @@ const pointOfSaleSchema = new mongoose.Schema({
   },
 
   // === OPERATING HOURS ===
-  hours: {
+  hours: [{
     monday: {
       open: {
         type: String,
@@ -125,8 +125,8 @@ const pointOfSaleSchema = new mongoose.Schema({
       }
       , closed: Boolean,
 
-    },
-    tuesday: {
+    }},
+    {tuesday: {
       open: {
         type: String,
         default: '9:00 AM'
@@ -137,8 +137,8 @@ const pointOfSaleSchema = new mongoose.Schema({
       }
       , closed: Boolean,
 
-    },
-    wednesday: {
+    }},
+    {wednesday: {
       open: {
         type: String,
         default: '9:00 AM'
@@ -149,8 +149,8 @@ const pointOfSaleSchema = new mongoose.Schema({
       }
       , closed: Boolean,
 
-    },
-    thursday: {
+    }},
+    {thursday: {
       open: {
         type: String,
         default: '9:00 AM'
@@ -161,8 +161,8 @@ const pointOfSaleSchema = new mongoose.Schema({
       }
       , closed: Boolean,
 
-    },
-    friday: {
+    }},
+    {friday: {
       open: {
         type: String,
         default: '9:00 AM'
@@ -173,8 +173,8 @@ const pointOfSaleSchema = new mongoose.Schema({
       }
       , closed: Boolean,
 
-    },
-    saturday: {
+    }},
+    {saturday: {
       open: {
         type: String,
         default: '9:00 AM'
@@ -185,8 +185,8 @@ const pointOfSaleSchema = new mongoose.Schema({
       }
       , closed: Boolean,
 
-    },
-    sunday: {
+    }},
+    {sunday: {
       open: {
         type: String,
         default: '9:00 AM'
@@ -197,10 +197,10 @@ const pointOfSaleSchema = new mongoose.Schema({
       }
       , closed: Boolean,
 
-    }
+    }}
 
     
-  },
+  ],
 
   // === STATISTICS === (updated automatically)
   stats: {
