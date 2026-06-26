@@ -8,7 +8,7 @@ const pointOfSaleSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  
+
   // === OWNER RELATIONSHIP === ⭐ CRITICAL!
   ownerId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -16,21 +16,21 @@ const pointOfSaleSchema = new mongoose.Schema({
     required: false,
     index: true  // Index for fast queries!
   },
-  rewards:[
+  rewards: [
     {
       id: mongoose.Schema.Types.ObjectId,
       title: String,
       cost: Number,
-      active:{
+      active: {
         type: Boolean,
         default: false
       },
     }
   ],
-  Redemption:[
+  Redemption: [
     {
       id: mongoose.Schema.Types.ObjectId,
-      rewardId:  {
+      rewardId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Reward',
         required: true
@@ -46,7 +46,7 @@ const pointOfSaleSchema = new mongoose.Schema({
         default: 'pending'
       },
       redeemedAt: {
-        type: Date, 
+        type: Date,
         default: Date.now
       }
     }
@@ -63,7 +63,7 @@ const pointOfSaleSchema = new mongoose.Schema({
       longitude: Number
     }
   },
-  posts:[{
+  posts: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Post',
     required: false
@@ -92,7 +92,7 @@ const pointOfSaleSchema = new mongoose.Schema({
     type: String,
     required: false
   },  // URL to cover/hero image
-  
+
   // === BUSINESS DETAILS ===
   description: {
     type: String,
@@ -101,8 +101,8 @@ const pointOfSaleSchema = new mongoose.Schema({
   cuisine: {
     type: String,
     enum: [
-      'Italian','Moroccan', 'Japanese', 'American', 'Mexican', 'Thai', 
-      'Chinese', 'Indian', 'French', 'Mediterranean', 
+      'Italian', 'Moroccan', 'Japanese', 'American', 'Mexican', 'Thai',
+      'Chinese', 'Indian', 'French', 'Mediterranean',
       'Korean', 'Vietnamese', 'Greek', 'Spanish', 'Cafe', 'Other'
     ]
   },
@@ -110,21 +110,98 @@ const pointOfSaleSchema = new mongoose.Schema({
     type: String,
     enum: ['$', '$$', '$$$', '$$$$']
   },
-  
+
   // === OPERATING HOURS ===
   hours: {
-    monday: { open: '10:00', close: '18:00', closed: false,
-      
-     },
-    tuesday: { open: '10:00', close: '18:00', closed: false },
-    wednesday: { open: '10:00', close: '18:00', closed: false },
-    thursday: { open: '10:00', close: '18:00', closed: false },
-    friday: { open: '10:00', close: '18:00', closed: false },
-    saturday: { open: '10:00', close: '18:00', closed: false },
-    sunday: { open: '10:00', close: '18:00', closed: false }
+    monday: {
+      open: {
+        type: String,
+        default: '9:00 AM'
+
+      },
+      close: {
+        type: String,
+        default: '10:00 PM'
+      }
+      , closed: Boolean,
+
+    },
+    tuesday: {
+      open: {
+        type: String,
+        default: '9:00 AM'
+      },
+      close: {
+        type: String,
+        default: '10:00 PM'
+      }
+      , closed: Boolean,
+
+    },
+    wednesday: {
+      open: {
+        type: String,
+        default: '9:00 AM'
+      },
+      close: {
+        type: String,
+        default: '10:00 PM'
+      }
+      , closed: Boolean,
+
+    },
+    thursday: {
+      open: {
+        type: String,
+        default: '9:00 AM'
+      },
+      close: {
+        type: String,
+        default: '10:00 PM'
+      }
+      , closed: Boolean,
+
+    },
+    friday: {
+      open: {
+        type: String,
+        default: '9:00 AM'
+      },
+      close: {
+        type: String,
+        default: '10:00 PM'
+      }
+      , closed: Boolean,
+
+    },
+    saturday: {
+      open: {
+        type: String,
+        default: '9:00 AM'
+      },
+      close: {
+        type: String,
+        default: '10:00 PM'
+      }
+      , closed: Boolean,
+
+    },
+    sunday: {
+      open: {
+        type: String,
+        default: '9:00 AM'
+      },
+      close: {
+        type: String,
+        default: '10:00 PM'
+      }
+      , closed: Boolean,
+
+    }
+
     
   },
-  
+
   // === STATISTICS === (updated automatically)
   stats: {
     totalVisits: { type: Number, default: 0 },
@@ -133,7 +210,7 @@ const pointOfSaleSchema = new mongoose.Schema({
     pointsRedeemed: { type: Number, default: 0 },
     totalRevenue: { type: Number, default: 0 }
   },
-  
+
   // === RATING BREAKDOWN ===
   ratingDistribution: {
     5: { type: Number, default: 0 },
@@ -142,7 +219,7 @@ const pointOfSaleSchema = new mongoose.Schema({
     2: { type: Number, default: 0 },
     1: { type: Number, default: 0 }
   },
-  
+
   // === STATUS & VERIFICATION ===
   status: {
     type: String,
@@ -153,18 +230,18 @@ const pointOfSaleSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  
+
   // === FEATURES & AMENITIES ===
   features: [{
     type: String,
     enum: [
-      'wifi', 'parking', 'outdoor_seating', 'takeout', 
+      'wifi', 'parking', 'outdoor_seating', 'takeout',
       'delivery', 'reservations', 'wheelchair_accessible',
-      'kid_friendly', 'pet_friendly', 'live_music', 
+      'kid_friendly', 'pet_friendly', 'live_music',
       'bar', 'credit_cards', 'vegan_options', 'gluten_free'
     ]
   }],
-  
+
   // === SOCIAL MEDIA ===
   socialMedia: {
     facebook: String,
@@ -172,7 +249,7 @@ const pointOfSaleSchema = new mongoose.Schema({
     twitter: String,
     tiktok: String
   },
-  
+
   // === METADATA ===
   createdAt: {
     type: Date,
@@ -183,14 +260,14 @@ const pointOfSaleSchema = new mongoose.Schema({
     default: Date.now
   },
   lastVisit: Date,  // Track when last customer visited
-  
+
   // === SOFT DELETE ===
   deleted: {
     type: Boolean,
     default: false
   },
   deletedAt: Date
-  
+
 }, {
   timestamps: true  // Auto-manages createdAt & updatedAt
 });
@@ -214,22 +291,22 @@ pointOfSaleSchema.index({ 'stats.averageRating': -1 });
 // Update statistics when new review/visit comes in
 // pointOfSaleSchema.methods.updateStats = async function() {
 //   const Review = mongoose.model('Review');
-  
+
 //   const reviews = await Review.find({ restaurantId: this._id });
-  
+
 //   this.stats.totalReviews = reviews.length;
-  
+
 //   if (reviews.length > 0) {
 //     const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
 //     this.stats.averageRating = (totalRating / reviews.length).toFixed(1);
-    
+
 //     // Update rating distribution
 //     this.ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 //     reviews.forEach(review => {
 //       this.ratingDistribution[review.rating]++;
 //     });
 //   }
-  
+
 //   await this.save();
 // };
 
@@ -238,11 +315,11 @@ pointOfSaleSchema.index({ 'stats.averageRating': -1 });
 //   const now = new Date();
 //   const dayName = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
 //   const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
-  
+
 //   const todayHours = this.hours[dayName];
-  
+
 //   if (!todayHours || todayHours.closed) return false;
-  
+
 //   return currentTime >= todayHours.open && currentTime <= todayHours.close;
 // };
 
