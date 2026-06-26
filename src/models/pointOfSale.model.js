@@ -112,150 +112,44 @@ const pointOfSaleSchema = new mongoose.Schema({
   },
 
   // === OPERATING HOURS ===
-  hours: [
-    {
-    monday: {
-      open: {
-        type: String,
-        default: '9:00 AM'
-
-      },
-      close: {
-        type: String,
-        default: '10:00 PM'
-      }
-      , closed: Boolean,
-      createdAt: {
-        type: Date,
-        default: Date.now
-      },
-      updatedAt: {
-        type: Date,
-        default: Date.now
-      },
-
-    }},
-    {
-      tuesday: {
-        open: {
-          type: String,
-          default: '9:00 AM'
-        },
-        close: {
-          type: String,
-          default: '10:00 PM'
-        }
-        , closed: Boolean,
-        createdAt: {
-          type: Date,
-          default: Date.now
-        },
-        updatedAt: {
-          type: Date,
-          default: Date.now
-        } 
-    }},
-    {
-      wednesday: {
-        open: {
-          type: String,
-          default: '9:00 AM'
-        },
-        close: {
-          type: String,
-          default: '10:00 PM'
-        }
-        , closed: Boolean,
-        createdAt: {
-          type: Date,
-          default: Date.now
-        },
-        updatedAt: {
-          type: Date,
-          default: Date.now
-        } 
-    }},
-    {
-      thursday: {
-        open: {
-          type: String,
-          default: '9:00 AM'
-        },
-        close: {
-          type: String,
-          default: '10:00 PM'
-        }
-        , closed: Boolean,
-        createdAt: {
-          type: Date,
-          default: Date.now
-        },
-        updatedAt: {
-          type: Date,
-          default: Date.now
-        } 
-    }},
-    {
-      friday: {
-        open: {
-          type: String,
-          default: '9:00 AM'
-        },
-        close: {
-          type: String,
-          default: '10:00 PM'
-        }
-        , closed: Boolean,
-        createdAt: {
-          type: Date,
-          default: Date.now
-        },
-        updatedAt: {
-          type: Date,
-          default: Date.now
-        } 
-    }},
-    {
-      saturday: {
-        open: {
-          type: String,
-          default: '9:00 AM'
-        },
-        close: {
-          type: String,
-          default: '10:00 PM'
-        }
-        , closed: Boolean,
-        createdAt: {
-          type: Date,
-          default: Date.now
-        },
-        updatedAt: {
-          type: Date,
-          default: Date.now
-        } 
-    }},
-    {
-      sunday: {
-        open: {
-          type: String,
-          default: '9:00 AM'
-        },
-        close: {
-          type: String,
-          default: '10:00 PM'
-        }
-        , closed: Boolean,
-        createdAt: {
-          type: Date,
-          default: Date.now
-        },
-        updatedAt: {
-          type: Date,
-          default: Date.now
-        } }}
-    
-  ],
+  hours: {
+     monday: {
+      open: "9:00 AM",
+      close: "10:00 PM",
+      closed: false
+    },
+    tuesday: {
+      open: "9:00 AM",
+      close: "10:00 PM",
+      closed: false
+    },
+    wednesday: {
+      open: "9:00 AM",
+      close: "10:00 PM",
+      closed: false
+    }, 
+    thursday: {
+      open: "9:00 AM",
+      close: "10:00 PM",
+      closed: false
+    },  
+    friday: {
+      open: "9:00 AM",
+      close: "10:00 PM",
+      closed: false
+    },  
+    saturday: {
+      open: "9:00 AM",
+      close: "10:00 PM",
+      closed: false
+    },
+    sunday: { 
+      open: "9:00 AM",
+      close: "10:00 PM",
+      closed: false
+    }
+  },
+  }
 
   // === STATISTICS === (updated automatically)
   stats: {
