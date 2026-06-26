@@ -115,6 +115,15 @@ pointsPlatrform:[{
             default: 0,
             required: false
         }
+        ,
+        createdAt: {
+            type: Date,
+            default: Date.now
+        },
+        updatedAt: {
+            type: Date,
+            default: Date.now
+        }
     }],
 
     posts:[{
