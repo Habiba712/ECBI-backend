@@ -153,7 +153,7 @@ if (shouldAwardPostReferralPoints) {
       pos: posId
      },
     { 
-      $set: { 
+      $push: { 
         referredUsers: {
           user: ownerId,              // Inject the friend's ID here
           isActive: true,
